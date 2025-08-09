@@ -1,0 +1,319 @@
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+
+export interface PropertyListing {
+  address: string;
+  price: string;
+  bedrooms: number;
+  bathrooms: number;
+  sqft: number;
+  description: string;
+  features: string[];
+  agentName: string;
+  agentPhone: string;
+  agentEmail: string;
+}
+
+export const createPropertyListingPDF = async (
+  property: PropertyListing
+): Promise<Uint8Array> => {
+  // Create a new PDF document
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([612, 792]); // Standard letter size
+  const { width, height } = page.getSize();
+
+  // Load fonts
+  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  // Set up colors
+  const primaryColor = rgb(0.2, 0.4, 0.8); // Blue
+  const textColor = rgb(0.1, 0.1, 0.1);
+  const lightGray = rgb(0.9, 0.9, 0.9);
+
+  // Header
+  page.drawText("PROPERTY LISTING", {
+    x: 50,
+    y: height - 50,
+    size: 24,
+    font: helveticaBold,
+    color: primaryColor,
+  });
+
+  // Property details
+  let yPosition = height - 100;
+
+  // Address
+  page.drawText("Address:", {
+    x: 50,
+    y: yPosition,
+    size: 12,
+    font: helveticaBold,
+    color: textColor,
+  });
+  page.drawText(property.address, {
+    x: 120,
+    y: yPosition,
+    size: 12,
+    font: helveticaFont,
+    color: textColor,
+  });
+  yPosition -= 25;
+
+  // Price
+  page.drawText("Price:", {
+    x: 50,
+    y: yPosition,
+    size: 12,
+    font: helveticaBold,
+    color: textColor,
+  });
+  page.drawText(property.price, {
+    x: 120,
+    y: yPosition,
+    size: 12,
+    font: helveticaFont,
+    color: textColor,
+  });
+  yPosition -= 25;
+
+  // Property specs
+  page.drawText("Bedrooms:", {
+    x: 50,
+    y: yPosition,
+    size: 12,
+    font: helveticaBold,
+    color: textColor,
+  });
+  page.drawText(property.bedrooms.toString(), {
+    x: 120,
+    y: yPosition,
+    size: 12,
+    font: helveticaFont,
+    color: textColor,
+  });
+  yPosition -= 20;
+
+  page.drawText("Bathrooms:", {
+    x: 50,
+    y: yPosition,
+    size: 12,
+    font: helveticaBold,
+    color: textColor,
+  });
+  page.drawText(property.bathrooms.toString(), {
+    x: 120,
+    y: yPosition,
+    size: 12,
+    font: helveticaFont,
+    color: textColor,
+  });
+  yPosition -= 20;
+
+  page.drawText("Square Feet:", {
+    x: 50,
+    y: yPosition,
+    size: 12,
+    font: helveticaBold,
+    color: textColor,
+  });
+  page.drawText(property.sqft.toString(), {
+    x: 120,
+    y: yPosition,
+    size: 12,
+    font: helveticaFont,
+    color: textColor,
+  });
+  yPosition -= 40;
+
+  // Description
+  page.drawText("Description:", {
+    x: 50,
+    y: yPosition,
+    size: 14,
+    font: helveticaBold,
+    color: primaryColor,
+  });
+  yPosition -= 25;
+
+  // Split description into lines that fit the page width
+  const maxWidth = width - 100;
+  const words = property.description.split(" ");
+  let currentLine = "";
+  const lines: string[] = [];
+
+  for (const word of words) {
+    const testLine = currentLine + (currentLine ? " " : "") + word;
+    const textWidth = helveticaFont.widthOfTextAtSize(testLine, 11);
+
+    if (textWidth > maxWidth) {
+      lines.push(currentLine);
+      currentLine = word;
+    } else {
+      currentLine = testLine;
+    }
+  }
+  if (currentLine) {
+    lines.push(currentLine);
+  }
+
+  // Draw description lines
+  for (const line of lines) {
+    if (yPosition < 100) break; // Stop if we're running out of space
+    page.drawText(line, {
+      x: 50,
+      y: yPosition,
+      size: 11,
+      font: helveticaFont,
+      color: textColor,
+    });
+    yPosition -= 15;
+  }
+
+  yPosition -= 20;
+
+  // Features
+  if (property.features.length > 0) {
+    page.drawText("Features:", {
+      x: 50,
+      y: yPosition,
+      size: 14,
+      font: helveticaBold,
+      color: primaryColor,
+    });
+    yPosition -= 25;
+
+    for (const feature of property.features) {
+      if (yPosition < 100) break;
+      page.drawText(`• ${feature}`, {
+        x: 50,
+        y: yPosition,
+        size: 11,
+        font: helveticaFont,
+        color: textColor,
+      });
+      yPosition -= 15;
+    }
+  }
+
+  // Agent contact information
+  yPosition -= 30;
+  page.drawText("Contact Information:", {
+    x: 50,
+    y: yPosition,
+    size: 14,
+    font: helveticaBold,
+    color: primaryColor,
+  });
+  yPosition -= 25;
+
+  page.drawText(`Agent: ${property.agentName}`, {
+    x: 50,
+    y: yPosition,
+    size: 11,
+    font: helveticaFont,
+    color: textColor,
+  });
+  yPosition -= 15;
+
+  page.drawText(`Phone: ${property.agentPhone}`, {
+    x: 50,
+    y: yPosition,
+    size: 11,
+    font: helveticaFont,
+    color: textColor,
+  });
+  yPosition -= 15;
+
+  page.drawText(`Email: ${property.agentEmail}`, {
+    x: 50,
+    y: yPosition,
+    size: 11,
+    font: helveticaFont,
+    color: textColor,
+  });
+
+  // Footer
+  page.drawText("Generated by Real Estate AI Marketing Suite", {
+    x: 50,
+    y: 30,
+    size: 8,
+    font: helveticaFont,
+    color: lightGray,
+  });
+
+  return await pdfDoc.save();
+};
+
+export const createMarketingFlyerPDF = async (
+  property: PropertyListing
+): Promise<Uint8Array> => {
+  const pdfDoc = await PDFDocument.create();
+  const page = pdfDoc.addPage([612, 792]);
+  const { width, height } = page.getSize();
+
+  const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+  const primaryColor = rgb(0.2, 0.4, 0.8);
+  const textColor = rgb(0.1, 0.1, 0.1);
+
+  // Title
+  page.drawText("FOR SALE", {
+    x: width / 2 - 60,
+    y: height - 80,
+    size: 32,
+    font: helveticaBold,
+    color: primaryColor,
+  });
+
+  // Price prominently displayed
+  page.drawText(property.price, {
+    x: width / 2 - 80,
+    y: height - 130,
+    size: 28,
+    font: helveticaBold,
+    color: textColor,
+  });
+
+  // Address
+  page.drawText(property.address, {
+    x: 50,
+    y: height - 180,
+    size: 16,
+    font: helveticaFont,
+    color: textColor,
+  });
+
+  // Property highlights
+  let yPosition = height - 220;
+  page.drawText(
+    `${property.bedrooms} Beds • ${property.bathrooms} Baths • ${property.sqft} Sq Ft`,
+    {
+      x: 50,
+      y: yPosition,
+      size: 14,
+      font: helveticaBold,
+      color: primaryColor,
+    }
+  );
+
+  yPosition -= 40;
+  page.drawText("Call Today!", {
+    x: 50,
+    y: yPosition,
+    size: 18,
+    font: helveticaBold,
+    color: primaryColor,
+  });
+
+  yPosition -= 25;
+  page.drawText(property.agentPhone, {
+    x: 50,
+    y: yPosition,
+    size: 16,
+    font: helveticaFont,
+    color: textColor,
+  });
+
+  return await pdfDoc.save();
+};
