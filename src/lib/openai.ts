@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 
-const openai = new OpenAI({
+export const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY || "",
 });
 
@@ -9,7 +9,7 @@ export default openai;
 // Helper function for GPT calls
 export const generateContent = async (
   prompt: string,
-  model: string = "gpt-3.5-turbo"
+  model: string = "gpt-4o-mini"
 ) => {
   try {
     if (!process.env.OPENAI_API_KEY) {
