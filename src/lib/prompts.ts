@@ -48,7 +48,9 @@ export type NeighborhoodGuideData = {
   tone?: string;
 };
 
-export function guidePrompt(guideData: NeighborhoodGuideData): string {
+export function neighborhoodGuidePrompt(
+  guideData: NeighborhoodGuideData
+): string {
   const {
     address = "",
     district = "",
