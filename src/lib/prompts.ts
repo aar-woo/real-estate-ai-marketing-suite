@@ -42,7 +42,7 @@ Guidelines:
 export type NeighborhoodGuideData = {
   address: string;
   district?: string;
-  schools?: string;
+  schools?: string[];
   audience?: "investors" | "sellers" | "buyers" | "renters";
   keyPoints?: string[];
   tone?: string;
@@ -54,7 +54,7 @@ export function neighborhoodGuidePrompt(
   const {
     address = "",
     district = "",
-    schools = "",
+    schools = [],
     audience = "buyers",
     keyPoints = [],
     tone = "professional",
@@ -63,7 +63,7 @@ export function neighborhoodGuidePrompt(
   return `You are an expert neighborhood guide writter for ${audience}. Write a ${tone}, factual summary for the following neighborhood:
 Address: ${address}
 District: ${district}
-Schools: ${schools}
+Schools: ${schools.join(", ")}
 Key points to include: ${keyPoints.join(", ")}
 
 Guidelines:
