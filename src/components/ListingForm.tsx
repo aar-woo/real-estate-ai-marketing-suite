@@ -46,6 +46,7 @@ export default function ListingForm() {
 
   return (
     <div className="max-w-lg mx-auto p-4">
+      <h2 className="text-xl font-bold mb-4 text-center">Listing Generator</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {Object.keys(form).map((key) => (
           <input
@@ -57,7 +58,11 @@ export default function ListingForm() {
             className="border p-2 w-full"
           />
         ))}
-        <button className="bg-blue-600 text-white p-2 rounded" type="submit">
+        <button
+          className="bg-blue-600 text-white p-2 rounded w-full"
+          style={{ backgroundColor: "#007bff" }}
+          type="submit"
+        >
           Generate Listing
         </button>
       </form>
