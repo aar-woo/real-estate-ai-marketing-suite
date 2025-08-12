@@ -1,6 +1,7 @@
 import Image from "next/image";
 import ListingForm from "@/components/ListingForm";
 import NeighborhoodGuideForm from "@/components/NeighborhoodGuideForm";
+import ZillowScraper from "@/components/ZillowScraper";
 
 export default function Home() {
   return (
@@ -9,7 +10,9 @@ export default function Home() {
         <h1 className="text-3xl font-bold text-center mb-2">
           Real Estate AI Marketing Suite
         </h1>
-
+        <div className="flex w-full">
+          <ZillowScraper />
+        </div>
         <div className="flex flex-col lg:flex-row gap-8 w-full">
           <ListingForm />
           <NeighborhoodGuideForm />
