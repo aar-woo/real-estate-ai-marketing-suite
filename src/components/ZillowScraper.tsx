@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { PropertyData } from "@/lib/prompts";
 
 interface ZillowData {
   address: string;
@@ -31,7 +32,9 @@ interface ScrapeResponse {
 export default function ZillowScraper() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGeneratingListing, setIsGeneratingListing] = useState(false);
   const [result, setResult] = useState<ScrapeResponse | null>(null);
+  const [generatedListing, setGeneratedListing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [useApify, setUseApify] = useState(true);
 
@@ -69,10 +72,30 @@ export default function ZillowScraper() {
     }
   };
 
+  const handleGenerateListing = async () => {
+    setIsGeneratingListing(true);
+    const scrapedPropertyData: PropertyData = {
+      address: result?.data.address,
+      price: result?.data.price,
+      bedrooms: result?.data.beds ? Number(result?.data.beds) : 0,
+      bathrooms: result?.data.baths ? Number(result?.data.baths) : 0,
+      sqft: result?.data.sqft ? Number(result?.data.sqft) : 0,
+      features: result?.data.features,
+    };
+
+    const createListingRes = await fetch("/api/generate-listing", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ propertyData: scrapedPropertyData }),
+    });
+    const createListingData = await createListingRes.json();
+    setGeneratedListing(createListingData.result);
+    setIsGeneratingListing(false);
+  };
+
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Zillow Listing Scraper</h1>
-
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="mb-4">
           <label htmlFor="url" className="block text-sm font-medium mb-2">
@@ -104,16 +127,31 @@ export default function ZillowScraper() {
         <button
           type="button"
           disabled={isLoading || !url}
-          className="bg-blue-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="bg-green-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleSubmit}
         >
           {isLoading ? "Scraping..." : "Scrape Listing"}
+        </button>
+        <button
+          type="button"
+          disabled={!result || isLoading}
+          className="bg-blue-600 text-white mx-3 px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={handleGenerateListing}
+        >
+          {isGeneratingListing ? "Generating Listing..." : "Generate Listing"}
         </button>
       </form>
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
           <strong>Error:</strong> {error}
+        </div>
+      )}
+
+      {generatedListing && (
+        <div className="bg-blue-200 mb-4 text-black border border-blue-200 rounded-lg p-6">
+          <h3 className="font-semibold mb-3">Generated Listing</h3>
+          <p>{generatedListing}</p>
         </div>
       )}
 
