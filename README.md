@@ -69,6 +69,61 @@ The project includes API routes support. Example API endpoints:
 - **GET** `/api/hello` - Returns a greeting message
 - **POST** `/api/hello` - Accepts JSON data and returns it with metadata
 - **POST** `/api/generate-content` - Generates property descriptions and PDFs using AI
+- **POST** `/api/generate-listing` - Generates property listings using AI
+- **POST** `/api/generate-neighborhood-guide` - Generates neighborhood guides using AI
+
+### Zillow Listing Scraper
+
+The project includes two API routes for scraping Zillow property listings:
+
+#### 1. Basic Scraping (`/api/scrape-zillow`)
+
+- **Purpose**: Basic web scraping using fetch and regex patterns
+- **Features**:
+  - No external dependencies required
+  - Works immediately without setup
+  - Limited data extraction capabilities
+  - May be blocked by Zillow's anti-bot measures
+
+#### 2. Advanced Scraping with Apify (`/api/scrape-zillow-apify`)
+
+- **Purpose**: Advanced web scraping using Apify's web scraping tools
+- **Features**:
+  - Better data extraction with proper HTML parsing
+  - Proxy rotation to avoid blocking
+  - More reliable and comprehensive data
+  - Falls back to basic scraping if Apify fails
+
+#### Setup for Apify Scraping
+
+1. Sign up at [Apify.com](https://apify.com)
+2. Get your API token from Account Settings → Integrations → API tokens
+3. Create or use a custom Zillow scraper actor
+4. Add the following to your `.env.local` file:
+   ```env
+   APIFY_API_TOKEN=your_apify_api_token
+   APIFY_ZILLOW_ACTOR_ID=your_zillow_scraper_actor_id
+   ```
+
+#### Usage Example
+
+```bash
+curl -X POST http://localhost:3000/api/scrape-zillow-apify \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://www.zillow.com/homedetails/7126-Naakea-St-Honolulu-HI-96825/622192_zpid/"}'
+```
+
+#### React Component
+
+A ready-to-use React component is included at `src/components/ZillowScraper.tsx`:
+
+```tsx
+import ZillowScraper from "@/components/ZillowScraper";
+
+export default function Page() {
+  return <ZillowScraper />;
+}
+```
 
 ### Testing the API
 
@@ -110,6 +165,7 @@ curl -X POST http://localhost:3000/api/generate-content \
 - **Supabase** - Authentication and database
 - **PDF-lib** - PDF generation
 - **Stripe** - Payment processing
+- **Apify** - Web scraping and automation (optional)
 
 ## Environment Setup
 
@@ -126,6 +182,11 @@ Required environment variables:
 - `OPENAI_API_KEY` - Your OpenAI API key
 - `STRIPE_SECRET_KEY` - Your Stripe secret key
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Your Stripe publishable key
+
+Optional environment variables:
+
+- `APIFY_API_TOKEN` - Your Apify API token for advanced Zillow scraping
+- `APIFY_ZILLOW_ACTOR_ID` - Your custom Zillow scraper actor ID
 
 ## Development
 
