@@ -7,18 +7,27 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const location = searchParams.get("location");
-    const radius = searchParams.get("radius");
-    const types = searchParams.get("types");
-
     if (!location) {
       return NextResponse.json(
-        {
-          error:
-            "Location is required (can be address, zip code, or neighborhood)",
-        },
+        { error: "Location parameter is required" },
         { status: 400 }
       );
     }
+
+    const radiusParam = searchParams.get("radius");
+    const radius = radiusParam ? parseInt(radiusParam) : 5000;
+
+    if (radiusParam && (isNaN(radius) || radius < 100 || radius > 50000)) {
+      return NextResponse.json(
+        { error: "Radius must be a number between 100 and 50000 meters" },
+        { status: 400 }
+      );
+    }
+
+    const typesParam = searchParams.get("types");
+    const types = typesParam
+      ? typesParam.split(",")
+      : ["restaurant", "park", "tourist_attraction"];
 
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
     if (!apiKey) {
@@ -27,11 +36,6 @@ export async function GET(request: NextRequest) {
         { status: 500 }
       );
     }
-
-    const searchRadius = radius ? parseInt(radius) : 5000;
-    const searchTypes = types
-      ? types.split(",")
-      : ["restaurant", "park", "tourist_attraction"];
 
     const geocodeResponse = await client.geocode({
       params: {
@@ -52,11 +56,11 @@ export async function GET(request: NextRequest) {
 
     const { lat, lng } = geocodeResponse.data.results[0].geometry.location;
 
-    const placesPromises = searchTypes.map(async (type: string) => {
+    const placesPromises = types.map(async (type: string) => {
       const placesResponse = await client.placesNearby({
         params: {
           location: { lat, lng },
-          radius: searchRadius,
+          radius,
           type,
           key: apiKey,
         },
@@ -103,8 +107,8 @@ export async function GET(request: NextRequest) {
       },
       places: sortedPlaces,
       total_count: allPlaces.length,
-      radius_meters: searchRadius,
-      search_types: searchTypes,
+      radius_meters: radius,
+      search_types: types,
     });
   } catch (error) {
     console.error("Error fetching places:", error);
