@@ -74,25 +74,34 @@ export async function GET(request: NextRequest) {
 
     const placesResults = await Promise.all(placesPromises);
 
-    const allPlaces = placesResults.flatMap(({ type, places }) =>
-      places.map((place: any) => ({
-        id: place.place_id,
-        name: place.name,
-        type,
-        rating: place.rating,
-        user_ratings_total: place.user_ratings_total,
-        vicinity: place.vicinity,
-        geometry: place.geometry,
-        photos: place.photos?.slice(0, 3).map((photo: any) => ({
-          photo_reference: photo.photo_reference,
-          height: photo.height,
-          width: photo.width,
-        })),
-        price_level: place.price_level,
-        opening_hours: place.opening_hours?.open_now,
-        types: place.types,
-      }))
-    );
+    const placesMap = new Map();
+
+    placesResults.forEach(({ type, places }) => {
+      places.forEach((place: any) => {
+        if (!placesMap.has(place.place_id)) {
+          placesMap.set(place.place_id, {
+            id: place.place_id,
+            name: place.name,
+            types: place.types,
+            rating: place.rating,
+            user_ratings_total: place.user_ratings_total,
+            vicinity: place.vicinity,
+            geometry: place.geometry,
+            photos: place.photos?.slice(0, 3).map((photo: any) => ({
+              photo_reference: photo.photo_reference,
+              height: photo.height,
+              width: photo.width,
+            })),
+            price_level: place.price_level,
+            opening_hours: place.opening_hours?.open_now,
+            primary_type:
+              place.types.find((t: string) => types.includes(t)) || type,
+          });
+        }
+      });
+    });
+
+    const allPlaces = Array.from(placesMap.values());
 
     const sortedPlaces = allPlaces
       .filter((place) => place.rating)
