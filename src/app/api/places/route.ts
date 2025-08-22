@@ -105,14 +105,16 @@ export async function GET(request: NextRequest) {
       });
     });
 
-    const allPlaces = Array.from(placesMap.values());
+    const allFilteredPlaces = Array.from(placesMap.values());
 
-    const sortedPlaces = allPlaces
-      .sort((a, b) => {
-        if (a.primary_type < b.primary_type) return -1;
-        return 1;
-      })
-      .slice(0, 15);
+    const placesByType: { [key: string]: any[] } = {};
+    allFilteredPlaces.forEach((place) => {
+      const primaryType = place.primary_type;
+      if (!placesByType[primaryType]) {
+        placesByType[primaryType] = [];
+      }
+      placesByType[primaryType].push(place);
+    });
 
     return NextResponse.json({
       success: true,
@@ -120,8 +122,8 @@ export async function GET(request: NextRequest) {
         address: geocodeResponse.data.results[0].formatted_address,
         coordinates: { lat, lng },
       },
-      places: sortedPlaces,
-      total_count: allPlaces.length,
+      places: placesByType,
+      total_count: allFilteredPlaces.length,
       radius_meters: radius,
       search_types: types,
     });
