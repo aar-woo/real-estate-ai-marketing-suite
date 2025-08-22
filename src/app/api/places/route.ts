@@ -77,7 +77,11 @@ export async function GET(request: NextRequest) {
     const placesMap = new Map();
 
     placesResults.forEach(({ type, places }) => {
-      places.forEach((place: any) => {
+      const topPlaces = places
+        .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+        .slice(0, 5);
+
+      topPlaces.forEach((place: any) => {
         if (!placesMap.has(place.place_id)) {
           placesMap.set(place.place_id, {
             id: place.place_id,
@@ -104,9 +108,11 @@ export async function GET(request: NextRequest) {
     const allPlaces = Array.from(placesMap.values());
 
     const sortedPlaces = allPlaces
-      .filter((place) => place.rating)
-      .sort((a, b) => (b.rating || 0) - (a.rating || 0))
-      .slice(0, 10);
+      .sort((a, b) => {
+        if (a.primary_type < b.primary_type) return -1;
+        return 1;
+      })
+      .slice(0, 15);
 
     return NextResponse.json({
       success: true,
