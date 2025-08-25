@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { Client, Place } from "@googlemaps/google-maps-services-js";
+import { ExtendedPlace, PlaceType } from "@/lib/placesTypes";
 
 const client = new Client({});
-
-export type PlaceType = "restaurant" | "park" | "tourist_attraction";
 
 export async function GET(request: NextRequest) {
   try {
@@ -76,7 +75,7 @@ export async function GET(request: NextRequest) {
 
     const placesResults = await Promise.all(placesPromises);
 
-    const placesMap = new Map();
+    const placesMap = new Map<string, ExtendedPlace>();
     const typeCounts: { [key in PlaceType]: number } = {
       restaurant: 0,
       park: 0,
@@ -88,7 +87,11 @@ export async function GET(request: NextRequest) {
         (a, b) => (b.rating || 0) - (a.rating || 0)
       );
 
-      ratingSortedPlaces.forEach((place: any) => {
+      ratingSortedPlaces.forEach((place: Place) => {
+        if (!place.place_id || !place.types) {
+          return;
+        }
+
         const primaryType =
           place.types.find((t: string) => types.includes(t)) || type;
 
@@ -96,24 +99,13 @@ export async function GET(request: NextRequest) {
           typeCounts[primaryType as PlaceType] < 5 &&
           !placesMap.has(place.place_id)
         ) {
-          placesMap.set(place.place_id, {
+          const extendedPlace: ExtendedPlace = {
+            ...place,
             id: place.place_id,
-            name: place.name,
-            types: place.types,
-            rating: place.rating,
-            user_ratings_total: place.user_ratings_total,
-            vicinity: place.vicinity,
-            geometry: place.geometry,
-            photos: place.photos?.slice(0, 3).map((photo: any) => ({
-              photo_reference: photo.photo_reference,
-              height: photo.height,
-              width: photo.width,
-            })),
-            price_level: place.price_level,
-            opening_hours: place.opening_hours?.open_now,
-            primary_type:
-              place.types.find((t: string) => types.includes(t)) || type,
-          });
+            primary_type: primaryType,
+          };
+
+          placesMap.set(place.place_id, extendedPlace);
           typeCounts[primaryType as PlaceType]++;
         }
       });
@@ -121,8 +113,8 @@ export async function GET(request: NextRequest) {
 
     const allFilteredPlaces = Array.from(placesMap.values());
 
-    const placesByType: { [key in PlaceType]: Place[] } = {} as {
-      [key in PlaceType]: Place[];
+    const placesByType: { [key in PlaceType]: ExtendedPlace[] } = {} as {
+      [key in PlaceType]: ExtendedPlace[];
     };
     allFilteredPlaces.forEach((place) => {
       const primaryType = place.primary_type as PlaceType;
