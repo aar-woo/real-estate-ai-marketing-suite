@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { Client } from "@googlemaps/google-maps-services-js";
+import { Client, Place } from "@googlemaps/google-maps-services-js";
 
 const client = new Client({});
 
@@ -121,8 +121,8 @@ export async function GET(request: NextRequest) {
 
     const allFilteredPlaces = Array.from(placesMap.values());
 
-    const placesByType: { [key in PlaceType]: any[] } = {} as {
-      [key in PlaceType]: any[];
+    const placesByType: { [key in PlaceType]: Place[] } = {} as {
+      [key in PlaceType]: Place[];
     };
     allFilteredPlaces.forEach((place) => {
       const primaryType = place.primary_type as PlaceType;
