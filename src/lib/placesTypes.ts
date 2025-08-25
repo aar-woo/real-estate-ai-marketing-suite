@@ -6,7 +6,6 @@ export interface ExtendedPlace extends Place {
   primary_type: string;
 }
 
-// Interface for the places API response
 export interface PlacesApiResponse {
   success: boolean;
   location: {

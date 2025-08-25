@@ -95,8 +95,9 @@ export async function GET(request: NextRequest) {
         const primaryType =
           place.types.find((t: string) => types.includes(t)) || type;
 
+        // TODO: Remove the places limit of 2 and use the full list of places in prod
         if (
-          typeCounts[primaryType as PlaceType] < 5 &&
+          typeCounts[primaryType as PlaceType] < 2 &&
           !placesMap.has(place.place_id)
         ) {
           const extendedPlace: ExtendedPlace = {

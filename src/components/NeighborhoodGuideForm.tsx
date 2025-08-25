@@ -1,13 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import PlaceCard from "./PlaceCard";
 import type { NeighborhoodGuideData } from "@/lib/prompts";
+import { ExtendedPlace, PlacesApiResponse } from "@/lib/placesTypes";
 
 export default function NeighborhoodGuideForm() {
-  // Keep form state as strings for inputs; convert to NeighborhoodGuideData on submit
   const [form, setForm] = useState({
     address: "",
-    district: "",
     schools: "",
     audience: "buyers",
     keyPoints: "",
@@ -15,13 +15,15 @@ export default function NeighborhoodGuideForm() {
   });
 
   const [result, setResult] = useState("");
+  const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    await handleGetPlaces();
+
     const payload: NeighborhoodGuideData = {
       address: form.address || "",
-      district: form.district || undefined,
       schools: form.schools
         ? form.schools
             .split(",")
@@ -36,6 +38,11 @@ export default function NeighborhoodGuideForm() {
             .filter(Boolean)
         : [],
       tone: form.tone || undefined,
+      places: {
+        restaurant: placesData?.places?.restaurant || [],
+        park: placesData?.places?.park || [],
+        tourist_attraction: placesData?.places?.tourist_attraction || [],
+      },
     };
 
     const res = await fetch("/api/generate-neighborhood-guide", {
@@ -46,6 +53,25 @@ export default function NeighborhoodGuideForm() {
     const data = await res.json();
     setResult(data.result);
   }
+
+  const handleGetPlaces = async () => {
+    const params = new URLSearchParams({
+      location: form.address,
+      radius: "5000",
+      types: "restaurant,park,tourist_attraction",
+    });
+
+    const placesResponse = await fetch(`/api/places?${params}`);
+
+    const placesData = await placesResponse.json();
+
+    if (!placesResponse.ok) {
+      throw new Error(placesData.error || "Failed to fetch places");
+    }
+    setPlacesData(placesData);
+
+    console.log("placesData: ", placesData);
+  };
 
   return (
     <div className="max-w-lg mx-auto p-4">
@@ -60,13 +86,6 @@ export default function NeighborhoodGuideForm() {
           onChange={(e) => setForm({ ...form, address: e.target.value })}
           className="border p-2 w-full"
           required
-        />
-        <input
-          type="text"
-          placeholder="District"
-          value={form.district}
-          onChange={(e) => setForm({ ...form, district: e.target.value })}
-          className="border p-2 w-full"
         />
         <input
           type="text"
@@ -87,13 +106,6 @@ export default function NeighborhoodGuideForm() {
         </select>
         <input
           type="text"
-          placeholder="Key Points (comma-separated)"
-          value={form.keyPoints}
-          onChange={(e) => setForm({ ...form, keyPoints: e.target.value })}
-          className="border p-2 w-full"
-        />
-        <input
-          type="text"
           placeholder="Tone (professional, friendly, etc.)"
           value={form.tone}
           onChange={(e) => setForm({ ...form, tone: e.target.value })}
@@ -108,10 +120,23 @@ export default function NeighborhoodGuideForm() {
         </button>
       </form>
 
-      {result && (
+      {result && placesData && (
         <div className="mt-6 p-4 border rounded">
           <h3 className="font-bold">Generated Guide:</h3>
           <div className="whitespace-pre-wrap">{result}</div>
+          <section>
+            <h2 className="text-lg font-bold underline my-2">
+              Places In the Neighborhood
+            </h2>
+            <div className="flex flex-row flex-wrap gap-4">
+              {Object.entries(placesData.places).map(
+                ([placeType, places]: [string, ExtendedPlace[]]) =>
+                  places.map((place: ExtendedPlace) => (
+                    <PlaceCard key={place.id} place={place} showPhoto={true} />
+                  ))
+              )}
+            </div>
+          </section>
         </div>
       )}
     </div>
