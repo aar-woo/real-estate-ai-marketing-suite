@@ -25,7 +25,7 @@ export default function PlaceCard({ place, showPhoto = true }: PlaceCardProps) {
       <div className="flex items-start justify-between mb-2">
         <h4 className="font-semibold text-gray-800 text-lg">{place.name}</h4>
         <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full capitalize">
-          {place.primary_type}
+          {place.primary_type.split("_").join(" ")}
         </span>
       </div>
 
