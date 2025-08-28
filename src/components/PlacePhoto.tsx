@@ -7,7 +7,7 @@ interface PlacePhotoProps {
 
 export default function PlacePhoto({ photoReference, alt }: PlacePhotoProps) {
   const [imageSrc, setImageSrc] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -34,6 +34,8 @@ export default function PlacePhoto({ photoReference, alt }: PlacePhotoProps) {
 
     if (photoReference) {
       fetchPhoto();
+    } else {
+      return;
     }
   }, [photoReference]);
 

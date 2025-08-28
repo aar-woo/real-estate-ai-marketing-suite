@@ -13,10 +13,10 @@ export default function PlaceCard({ place, showPhoto = true }: PlaceCardProps) {
       className="border border-gray-200 bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
       style={{ width: "calc(50% - 8px)" }}
     >
-      {showPhoto && place.photos && place.photos[0] && (
+      {showPhoto && (
         <div className="mb-4 h-48 overflow-hidden rounded-lg">
           <PlacePhoto
-            photoReference={place.photos[0].photo_reference}
+            photoReference={place.photos?.[0]?.photo_reference || ""}
             alt={place.name || "Place"}
           />
         </div>
