@@ -71,6 +71,109 @@ The project includes API routes support. Example API endpoints:
 - **POST** `/api/generate-content` - Generates property descriptions and PDFs using AI
 - **POST** `/api/generate-listing` - Generates property listings using AI
 - **POST** `/api/generate-neighborhood-guide` - Generates neighborhood guides using AI
+- **GET** `/api/places` - Search for nearby restaurants, parks, landmarks, and other points of interest
+
+### Google Places API Integration
+
+The project includes a Google Places API integration for finding nearby amenities and attractions based on location.
+
+#### Setup
+
+1. **Get a Google Maps API Key**:
+
+   - Go to the [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Enable the following APIs:
+     - Places API
+     - Geocoding API
+   - Create credentials (API Key)
+   - Restrict the API key to only the necessary APIs and your domain for security
+
+2. **Environment Variables**:
+   Add your Google Maps API key to your `.env.local` file:
+   ```env
+   GOOGLE_MAPS_API_KEY=your_google_maps_api_key_here
+   ```
+
+#### Usage
+
+**GET** `/api/places` - Search for nearby places using query parameters.
+
+**URL Parameters**:
+
+- `location` (required): Address, zip code, or neighborhood name
+- `radius` (optional): Search radius in meters (default: 5000)
+- `types` (optional): Comma-separated list of place types (default: "restaurant,park,tourist_attraction")
+
+**Example Request**:
+
+```bash
+GET /api/places?location=Manhattan&radius=10000&types=restaurant,museum
+```
+
+**Response**:
+
+```json
+{
+  "success": true,
+  "location": {
+    "address": "Manhattan, New York, NY, USA",
+    "coordinates": {
+      "lat": 40.7831,
+      "lng": -73.9712
+    }
+  },
+  "places": [
+    {
+      "id": "place_id_here",
+      "name": "Restaurant Name",
+      "type": "restaurant",
+      "rating": 4.5,
+      "user_ratings_total": 150,
+      "vicinity": "123 Main St, New York",
+      "geometry": {
+        "location": {
+          "lat": 40.7831,
+          "lng": -73.9712
+        }
+      },
+      "photos": [...],
+      "price_level": 2,
+      "opening_hours": true,
+      "types": ["restaurant", "food", "establishment"]
+    }
+  ],
+  "total_count": 25,
+  "radius_meters": 10000,
+  "search_types": ["restaurant", "museum"]
+}
+```
+
+**Available Place Types**:
+
+- `restaurant` - Restaurants and food establishments
+- `park` - Parks and recreational areas
+- `tourist_attraction` - Landmarks and tourist destinations
+
+**Testing with cURL**:
+
+```bash
+# Search for restaurants near a zip code
+curl "http://localhost:3000/api/places?location=10001&types=restaurant&radius=3000"
+
+# Search for parks and landmarks in a neighborhood
+curl "http://localhost:3000/api/places?location=Brooklyn%20Heights&types=park,tourist_attraction&radius=5000"
+```
+
+**Why GET Method?**
+This API follows REST principles by using **GET** for data retrieval:
+
+- **GET**: Retrieve/search data (read-only operations)
+- **POST**: Create new resources
+- **PUT/PATCH**: Update existing resources
+- **DELETE**: Remove resources
+
+Since we're searching and retrieving place data (not creating, updating, or deleting anything), GET is the appropriate HTTP method.
 
 ### Zillow Listing Scraper
 
@@ -182,6 +285,7 @@ Required environment variables:
 - `OPENAI_API_KEY` - Your OpenAI API key
 - `STRIPE_SECRET_KEY` - Your Stripe secret key
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Your Stripe publishable key
+- `GOOGLE_MAPS_API_KEY` - Your Google Maps API key for Places API integration
 
 Optional environment variables:
 

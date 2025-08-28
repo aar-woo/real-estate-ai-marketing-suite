@@ -1,3 +1,5 @@
+import { ExtendedPlace } from "./placesTypes";
+
 export type PropertyData = {
   address?: string;
   price?: string;
@@ -44,10 +46,16 @@ export type NeighborhoodGuideData = {
   district?: string;
   schools?: string[];
   audience?: "investors" | "sellers" | "buyers" | "renters";
+  places?: {
+    restaurant?: ExtendedPlace[];
+    park?: ExtendedPlace[];
+    tourist_attraction?: ExtendedPlace[];
+  };
   keyPoints?: string[];
   tone?: string;
 };
 
+// TODO: Remove the slice(0, 2) and use the full list of places in prod - temporary limit for api call limit
 export function neighborhoodGuidePrompt(
   guideData: NeighborhoodGuideData
 ): string {
@@ -56,6 +64,11 @@ export function neighborhoodGuidePrompt(
     district = "",
     schools = [],
     audience = "buyers",
+    places = {
+      restaurant: [],
+      park: [],
+      tourist_attraction: [],
+    },
     keyPoints = [],
     tone = "professional",
   } = guideData || ({} as NeighborhoodGuideData);
@@ -64,6 +77,18 @@ export function neighborhoodGuidePrompt(
 Address: ${address}
 District: ${district}
 Schools: ${schools.join(", ")}
+Restaurants: ${places?.restaurant
+    ?.slice(0, 2)
+    .map((r) => r.name)
+    .join(", ")}
+Parks: ${places?.park
+    ?.slice(0, 2)
+    .map((p) => p.name)
+    .join(", ")}
+Tourist Attractions: ${places?.tourist_attraction
+    ?.slice(0, 2)
+    .map((t) => t.name)
+    .join(", ")}
 Key points to include: ${keyPoints.join(", ")}
 
 Guidelines:
