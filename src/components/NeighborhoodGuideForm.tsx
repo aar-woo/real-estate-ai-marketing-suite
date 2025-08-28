@@ -12,6 +12,7 @@ export default function NeighborhoodGuideForm() {
     audience: "buyers",
     keyPoints: "",
     tone: "professional",
+    radius: 5000,
   });
 
   const [result, setResult] = useState("");
@@ -57,7 +58,7 @@ export default function NeighborhoodGuideForm() {
   const handleGetPlaces = async () => {
     const params = new URLSearchParams({
       location: form.address,
-      radius: "5000",
+      radius: form.radius.toString(),
       types: "restaurant,park,tourist_attraction",
     });
 
@@ -111,6 +112,24 @@ export default function NeighborhoodGuideForm() {
           onChange={(e) => setForm({ ...form, tone: e.target.value })}
           className="border p-2 w-full"
         />
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Search Radius (meters)
+          </label>
+          <select
+            value={form.radius}
+            onChange={(e) =>
+              setForm({ ...form, radius: Number(e.target.value) })
+            }
+            className="w-full px-3 py-2 border border-gray-300 d rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value={1000}>1 km</option>
+            <option value={5000}>5 km</option>
+            <option value={10000}>10 km</option>
+            <option value={25000}>25 km</option>
+            <option value={50000}>50 km</option>
+          </select>
+        </div>
         <button
           className="bg-blue-600 text-white p-2 rounded w-full"
           style={{ backgroundColor: "#007bff" }}
