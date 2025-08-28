@@ -17,42 +17,54 @@ export default function NeighborhoodGuideForm() {
 
   const [result, setResult] = useState("");
   const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setIsLoading(true);
 
-    await handleGetPlaces();
+    try {
+      await handleGetPlaces();
 
-    const payload: NeighborhoodGuideData = {
-      address: form.address || "",
-      schools: form.schools
-        ? form.schools
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : [],
-      audience: form.audience as "investors" | "sellers" | "buyers" | "renters",
-      keyPoints: form.keyPoints
-        ? form.keyPoints
-            .split(",")
-            .map((s) => s.trim())
-            .filter(Boolean)
-        : [],
-      tone: form.tone || undefined,
-      places: {
-        restaurant: placesData?.places?.restaurant || [],
-        park: placesData?.places?.park || [],
-        tourist_attraction: placesData?.places?.tourist_attraction || [],
-      },
-    };
+      const payload: NeighborhoodGuideData = {
+        address: form.address || "",
+        schools: form.schools
+          ? form.schools
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [],
+        audience: form.audience as
+          | "investors"
+          | "sellers"
+          | "buyers"
+          | "renters",
+        keyPoints: form.keyPoints
+          ? form.keyPoints
+              .split(",")
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [],
+        tone: form.tone || undefined,
+        places: {
+          restaurant: placesData?.places?.restaurant || [],
+          park: placesData?.places?.park || [],
+          tourist_attraction: placesData?.places?.tourist_attraction || [],
+        },
+      };
 
-    const res = await fetch("/api/generate-neighborhood-guide", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ guideData: payload }),
-    });
-    const data = await res.json();
-    setResult(data.result);
+      const res = await fetch("/api/generate-neighborhood-guide", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ guideData: payload }),
+      });
+      const data = await res.json();
+      setResult(data.result);
+    } catch (error) {
+      console.error("Error generating neighborhood guide:", error);
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   const handleGetPlaces = async () => {
@@ -70,8 +82,6 @@ export default function NeighborhoodGuideForm() {
       throw new Error(placesData.error || "Failed to fetch places");
     }
     setPlacesData(placesData);
-
-    console.log("placesData: ", placesData);
   };
 
   return (
@@ -131,11 +141,38 @@ export default function NeighborhoodGuideForm() {
           </select>
         </div>
         <button
-          className="bg-blue-600 text-white p-2 rounded w-full"
+          className="bg-blue-600 text-white p-2 rounded w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
           style={{ backgroundColor: "#007bff" }}
           type="submit"
+          disabled={isLoading}
         >
-          Generate Neighborhood Guide
+          {isLoading ? (
+            <>
+              <svg
+                className="animate-spin h-5 w-5 text-white"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+              Generating...
+            </>
+          ) : (
+            "Generate Neighborhood Guide"
+          )}
         </button>
       </form>
 
