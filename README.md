@@ -154,27 +154,6 @@ GET /api/places?location=Manhattan&radius=10000&types=restaurant,museum
 - `restaurant` - Restaurants and food establishments
 - `park` - Parks and recreational areas
 - `tourist_attraction` - Landmarks and tourist destinations
-- `school` - Educational institutions
-- `hospital` - Medical facilities
-- `shopping_mall` - Shopping centers
-- `movie_theater` - Cinemas
-- `gym` - Fitness centers
-- `library` - Libraries
-- `museum` - Museums and galleries
-
-**React Component**:
-A ready-to-use React component is included at `src/components/PlacesSearch.tsx`:
-
-```tsx
-import PlacesSearch from "@/components/PlacesSearch";
-
-export default function Page() {
-  return <PlacesSearch />;
-}
-```
-
-**Demo Page**:
-Visit `/places` to see the component in action and test the API functionality.
 
 **Testing with cURL**:
 
