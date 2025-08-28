@@ -1,11 +1,29 @@
-import Image from "next/image";
 import ListingForm from "@/components/ListingForm";
 import NeighborhoodGuideForm from "@/components/NeighborhoodGuideForm";
 import ZillowScraper from "@/components/ZillowScraper";
+import Tabs from "@/components/Tabs";
+
+const tabs = [
+  {
+    id: "zillow-scraper",
+    label: "Zillow Listing Scraper",
+    content: <ZillowScraper />,
+  },
+  {
+    id: "listing-form",
+    label: "Listing Generator",
+    content: <ListingForm />,
+  },
+  {
+    id: "neighborhood-guide",
+    label: "Neighborhood Guide",
+    content: <NeighborhoodGuideForm />,
+  },
+];
 
 export default function Home() {
   return (
-    <div className="font-sans flex flex-col items-center justify-center min-h-screen gap-8">
+    <div className="font-sans flex flex-col items-center min-h-screen gap-8">
       <header
         className="w-full h-[140px] flex items-center justify-center"
         style={{
@@ -23,13 +41,7 @@ export default function Home() {
         </div>
       </header>
       <main className="flex flex-col gap-[32px] items-center sm:items-start w-full max-w-6xl sm:px-12">
-        <div className="flex w-full">
-          <ZillowScraper />
-        </div>
-        <div className="flex flex-col lg:flex-row gap-8 w-full">
-          <ListingForm />
-          <NeighborhoodGuideForm />
-        </div>
+        <Tabs tabs={tabs} defaultTab="zillow-scraper" />
       </main>
     </div>
   );
