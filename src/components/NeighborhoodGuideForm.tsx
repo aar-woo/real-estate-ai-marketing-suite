@@ -6,10 +6,10 @@ import type { NeighborhoodGuideData } from "@/lib/prompts";
 import { ExtendedPlace, PlacesApiResponse } from "@/lib/placesTypes";
 
 const placeTypes = [
-  { value: "restaurant", label: "Restaurants" },
-  { value: "park", label: "Parks" },
-  { value: "tourist_attraction", label: "Landmarks" },
-  { value: "school", label: "Schools" },
+  { value: "restaurant", label: "Restaurants", emoji: "🍔" },
+  { value: "park", label: "Parks", emoji: "🌳" },
+  { value: "tourist_attraction", label: "Landmarks", emoji: "🏙️" },
+  { value: "school", label: "Schools", emoji: "📚" },
 ];
 
 export default function NeighborhoodGuideForm() {
@@ -138,8 +138,9 @@ export default function NeighborhoodGuideForm() {
                   onChange={() => handleTypeToggle(type.value)}
                   className="border p-2 w-full"
                 />
-                <label htmlFor={type.value}>
+                <label htmlFor={type.value} className="flex items-center gap-1">
                   <span className="text-sm">{type.label}</span>
+                  <span className="text-sm">{type.emoji}</span>
                 </label>
               </li>
             ))}
