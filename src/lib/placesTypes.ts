@@ -20,4 +20,4 @@ export interface PlacesApiResponse {
   search_types: string[];
 }
 
-export type PlaceType = "restaurant" | "park" | "tourist_attraction";
+export type PlaceType = "restaurant" | "park" | "tourist_attraction" | "school";

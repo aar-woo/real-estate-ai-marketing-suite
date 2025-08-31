@@ -4,6 +4,8 @@ import { useState } from "react";
 import PlaceCard from "./PlaceCard";
 import type { NeighborhoodGuideData } from "@/lib/prompts";
 import { ExtendedPlace, PlacesApiResponse } from "@/lib/placesTypes";
+import { getParsedAddress } from "@/lib/addressUtils";
+import { convertDistance } from "geolib";
 
 const placeTypes = [
   { value: "restaurant", label: "Restaurants", emoji: "🍔" },
@@ -22,7 +24,6 @@ export default function NeighborhoodGuideForm() {
     radius: 5000,
   });
   const [result, setResult] = useState("");
-  const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([
     "restaurant",
@@ -30,12 +31,18 @@ export default function NeighborhoodGuideForm() {
     "tourist_attraction",
     "school",
   ]);
+  const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
+  const [schoolsData, setSchoolsData] = useState<any | null>(null);
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
 
     try {
       await handleGetPlaces();
+      if (selectedTypes.includes("school")) {
+        await handleGetSchools();
+      }
 
       const payload: NeighborhoodGuideData = {
         address: form.address || "",
@@ -87,6 +94,24 @@ export default function NeighborhoodGuideForm() {
       throw new Error(placesData.error || "Failed to fetch places");
     }
     setPlacesData(placesData);
+  };
+
+  const handleGetSchools = async () => {
+    const parsedAddress = getParsedAddress(form.address);
+    const radiusInMiles = convertDistance(form.radius, "mi");
+    const params = new URLSearchParams({
+      ...(parsedAddress.state && { state: parsedAddress.state }),
+      ...(parsedAddress.zipCode && { zip: parsedAddress.zipCode }),
+      ...(parsedAddress.city && { city: parsedAddress.city }),
+      ...(radiusInMiles < 1
+        ? { radius: "1" }
+        : { radius: radiusInMiles.toString() }),
+    });
+
+    const schoolsResponse = await fetch(`/api/schools?${params}`);
+    const schoolsData = await schoolsResponse.json();
+
+    setSchoolsData(schoolsData);
   };
 
   const handleTypeToggle = (type: string) => {
