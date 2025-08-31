@@ -5,6 +5,13 @@ import PlaceCard from "./PlaceCard";
 import type { NeighborhoodGuideData } from "@/lib/prompts";
 import { ExtendedPlace, PlacesApiResponse } from "@/lib/placesTypes";
 
+const placeTypes = [
+  { value: "restaurant", label: "Restaurants" },
+  { value: "park", label: "Parks" },
+  { value: "tourist_attraction", label: "Landmarks" },
+  { value: "school", label: "Schools" },
+];
+
 export default function NeighborhoodGuideForm() {
   const [form, setForm] = useState({
     address: "",
@@ -14,11 +21,15 @@ export default function NeighborhoodGuideForm() {
     tone: "professional",
     radius: 5000,
   });
-
   const [result, setResult] = useState("");
   const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([
+    "restaurant",
+    "park",
+    "tourist_attraction",
+    "school",
+  ]);
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
@@ -28,12 +39,6 @@ export default function NeighborhoodGuideForm() {
 
       const payload: NeighborhoodGuideData = {
         address: form.address || "",
-        schools: form.schools
-          ? form.schools
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
-          : [],
         audience: form.audience as
           | "investors"
           | "sellers"
@@ -84,6 +89,12 @@ export default function NeighborhoodGuideForm() {
     setPlacesData(placesData);
   };
 
+  const handleTypeToggle = (type: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
   return (
     <div className="max-w-lg mx-auto p-4">
       <h2 className="text-xl font-bold mb-4 text-center">
@@ -97,13 +108,6 @@ export default function NeighborhoodGuideForm() {
           onChange={(e) => setForm({ ...form, address: e.target.value })}
           className="border p-2 w-full"
           required
-        />
-        <input
-          type="text"
-          placeholder="Schools"
-          value={form.schools}
-          onChange={(e) => setForm({ ...form, schools: e.target.value })}
-          className="border p-2 w-full"
         />
         <select
           value={form.audience}
@@ -123,7 +127,26 @@ export default function NeighborhoodGuideForm() {
           className="border p-2 w-full"
         />
         <div>
-          <label className="block text-sm font-medium mb-2">
+          <label className="text-md font-bold mb-2">Place Types</label>
+          <ul className="flex flex-row w-full justify-between">
+            {placeTypes.map((type) => (
+              <li key={type.value} className="flex items-center gap-1">
+                <input
+                  type="checkbox"
+                  id={type.value}
+                  checked={selectedTypes.includes(type.value)}
+                  onChange={() => handleTypeToggle(type.value)}
+                  className="border p-2 w-full"
+                />
+                <label htmlFor={type.value}>
+                  <span className="text-sm">{type.label}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <label className="text-md font-bold mb-2">
             Search Radius (meters)
           </label>
           <select
