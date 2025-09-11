@@ -4,7 +4,7 @@ import { useState } from "react";
 import PlaceCard from "./PlaceCard";
 import type { NeighborhoodGuideData } from "@/lib/prompts";
 import { ExtendedPlace, PlacesApiResponse } from "@/lib/placesTypes";
-import { getParsedAddress } from "@/lib/addressUtils";
+import { getParsedAddress, validAddress } from "@/lib/addressUtils";
 import { convertDistance } from "geolib";
 
 const placeTypes = [
@@ -39,6 +39,11 @@ export default function NeighborhoodGuideForm() {
     setIsLoading(true);
 
     try {
+      if (!validAddress(form.address)) {
+        throw new Error(
+          "Invalid address, please enter a valid address in the format of '123 Main St, City, State, Zip'"
+        );
+      }
       await handleGetPlaces();
       if (selectedTypes.includes("school")) {
         await handleGetSchools();
@@ -125,6 +130,7 @@ export default function NeighborhoodGuideForm() {
       <h2 className="text-xl font-bold mb-4 text-center">
         Neighborhood Guide Generator
       </h2>
+      <button onClick={() => handleGetSchools()}>Get Schools</button>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"

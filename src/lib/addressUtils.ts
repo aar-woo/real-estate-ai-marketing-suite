@@ -16,3 +16,11 @@ export function getParsedAddress(address: string): AddressComponents {
     city: parsed?.city || undefined,
   };
 }
+
+export function validAddress(address: string): boolean {
+  const parsed = parseAddress.parseLocation(address);
+  if (!parsed?.state || !parsed?.zip || !parsed?.city || !parsed?.street) {
+    return false;
+  }
+  return true;
+}

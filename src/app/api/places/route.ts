@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     const typesParam = searchParams.get("types");
     const types = typesParam
       ? typesParam.split(",")
-      : ["restaurant", "park", "tourist_attraction"];
+      : ["restaurant", "park", "tourist_attraction", "school"];
 
     const apiKey = process.env.GOOGLE_MAPS_API_KEY;
     if (!apiKey) {
@@ -74,12 +74,12 @@ export async function GET(request: NextRequest) {
     });
 
     const placesResults = await Promise.all(placesPromises);
-
     const placesMap = new Map<string, ExtendedPlace>();
     const typeCounts: { [key in PlaceType]: number } = {
       restaurant: 0,
       park: 0,
       tourist_attraction: 0,
+      school: 0,
     } as { [key in PlaceType]: number };
 
     placesResults.forEach(({ type, places }) => {
