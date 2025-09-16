@@ -110,8 +110,6 @@ export default function ZillowScraper() {
       throw new Error(placesData.error || "Failed to fetch places");
     }
     setPlacesData(placesData);
-
-    console.log("placesData: ", placesData);
   };
 
   return (

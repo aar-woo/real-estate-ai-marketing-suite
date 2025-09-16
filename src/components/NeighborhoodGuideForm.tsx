@@ -6,6 +6,7 @@ import type { NeighborhoodGuideData } from "@/lib/prompts";
 import { ExtendedPlace, PlacesApiResponse } from "@/lib/placesTypes";
 import { getParsedAddress, validAddress } from "@/lib/addressUtils";
 import { convertDistance } from "geolib";
+import SchoolCard, { School } from "./SchoolCard";
 
 const placeTypes = [
   { value: "restaurant", label: "Restaurants", emoji: "🍔" },
@@ -116,7 +117,7 @@ export default function NeighborhoodGuideForm() {
     const schoolsResponse = await fetch(`/api/schools?${params}`);
     const schoolsData = await schoolsResponse.json();
 
-    setSchoolsData(schoolsData);
+    setSchoolsData(schoolsData.schools);
   };
 
   const handleTypeToggle = (type: string) => {
@@ -126,11 +127,10 @@ export default function NeighborhoodGuideForm() {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4">
+    <div className="mx-auto p-4">
       <h2 className="text-xl font-bold mb-4 text-center">
         Neighborhood Guide Generator
       </h2>
-      <button onClick={() => handleGetSchools()}>Get Schools</button>
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
           type="text"
@@ -233,12 +233,12 @@ export default function NeighborhoodGuideForm() {
 
       {result && placesData && (
         <div className="mt-6 p-4 border rounded">
-          <h3 className="font-bold">Generated Guide:</h3>
+          <h2 className="text-lg font-bold">Generated Guide:</h2>
           <div className="whitespace-pre-wrap">{result}</div>
           <section>
-            <h2 className="text-lg font-bold underline my-2">
+            <h3 className="text-lg font-bold underline my-2">
               Places In the Neighborhood
-            </h2>
+            </h3>
             <div className="flex flex-row flex-wrap gap-4">
               {Object.entries(placesData.places).map(
                 ([placeType, places]: [string, ExtendedPlace[]]) =>
@@ -248,6 +248,16 @@ export default function NeighborhoodGuideForm() {
               )}
             </div>
           </section>
+          {schoolsData && (
+            <section className="mt-6">
+              <h3 className="text-lg font-bold underline my-2">Schools</h3>
+              <div className="flex flex-row gap-4">
+                {schoolsData.map((school: School) => (
+                  <SchoolCard key={school.id} school={school} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
     </div>
