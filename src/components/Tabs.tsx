@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import PageContainer from "./PageContainer";
 
 interface Tab {
   id: string;
@@ -42,7 +43,7 @@ export default function Tabs({ tabs, defaultTab }: TabsProps) {
               activeTab === tab.id ? "opacity-100" : "opacity-0 hidden"
             }`}
           >
-            {tab.content}
+            <PageContainer>{tab.content}</PageContainer>
           </div>
         ))}
       </div>

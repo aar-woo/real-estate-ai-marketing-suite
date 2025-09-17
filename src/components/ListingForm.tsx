@@ -45,8 +45,8 @@ export default function ListingForm() {
   }
 
   return (
-    <div className="max-w-lg mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4 text-center">Listing Generator</h2>
+    <div className="mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4 text-center">Listing Generator</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         {Object.keys(form).map((key) => (
           <input
