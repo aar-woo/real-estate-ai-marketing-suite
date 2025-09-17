@@ -25,7 +25,7 @@ export default function Home() {
   return (
     <div className="font-sans flex flex-col items-center min-h-screen">
       <header
-        className="w-full h-[140px] flex items-center justify-center"
+        className="w-full h-[90px] flex items-center justify-center"
         style={{
           position: "relative",
           backgroundImage: "url(/images/abstract-square-houses.png)",
