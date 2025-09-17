@@ -119,7 +119,10 @@ export default function ZillowScraper() {
       </h1>
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="mb-4">
-          <label htmlFor="url" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="url"
+            className="inline-block text-sm font-medium mb-2"
+          >
             Zillow Listing URL
           </label>
           <input

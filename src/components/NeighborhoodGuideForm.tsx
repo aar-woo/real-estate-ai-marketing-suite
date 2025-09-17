@@ -132,34 +132,77 @@ export default function NeighborhoodGuideForm() {
         Neighborhood Guide Generator
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Address"
-          value={form.address}
-          onChange={(e) => setForm({ ...form, address: e.target.value })}
-          className="border p-2 w-full"
-          required
-        />
-        <select
-          value={form.audience}
-          onChange={(e) => setForm({ ...form, audience: e.target.value })}
-          className="border p-2 w-full"
-        >
-          <option value="buyers">Buyers</option>
-          <option value="sellers">Sellers</option>
-          <option value="investors">Investors</option>
-          <option value="renters">Renters</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Tone (professional, friendly, etc.)"
-          value={form.tone}
-          onChange={(e) => setForm({ ...form, tone: e.target.value })}
-          className="border p-2 w-full"
-        />
+        <div>
+          <label
+            htmlFor="neighborhood-address"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Address
+          </label>
+          <input
+            id="neighborhood-address"
+            type="text"
+            placeholder="Enter property address"
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            className="border p-2 w-full"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="neighborhood-audience"
+            className="block text-sm font-medium text-white mb-1"
+          >
+            Target Audience
+          </label>
+          <select
+            id="neighborhood-audience"
+            value={form.audience}
+            onChange={(e) => setForm({ ...form, audience: e.target.value })}
+            className="border p-2 w-full"
+          >
+            <option value="buyers">Buyers</option>
+            <option value="sellers">Sellers</option>
+            <option value="investors">Investors</option>
+            <option value="renters">Renters</option>
+          </select>
+        </div>
+        <div>
+          <label
+            htmlFor="neighborhood-tone"
+            className="block text-sm font-medium text-white mb-1"
+          >
+            Tone
+          </label>
+          <input
+            id="neighborhood-tone"
+            type="text"
+            placeholder="professional, friendly, etc."
+            value={form.tone}
+            onChange={(e) => setForm({ ...form, tone: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="neighborhood-keyPoints"
+            className="block text-sm font-medium text-white mb-1"
+          >
+            Key Points (comma-separated)
+          </label>
+          <input
+            id="neighborhood-keyPoints"
+            type="text"
+            placeholder="Walkable neighborhood, great schools, etc."
+            value={form.keyPoints}
+            onChange={(e) => setForm({ ...form, keyPoints: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
         <div>
           <label className="text-md font-bold mb-2">Place Types</label>
-          <ul className="flex flex-row w-full justify-between">
+          <ul className="flex flex-row w-full gap-5">
             {placeTypes.map((type) => (
               <li key={type.value} className="flex items-center gap-1">
                 <input
@@ -178,10 +221,14 @@ export default function NeighborhoodGuideForm() {
           </ul>
         </div>
         <div>
-          <label className="text-md font-bold mb-2">
-            Search Radius (meters)
+          <label
+            htmlFor="neighborhood-radius"
+            className="block text-sm font-medium text-white mb-1"
+          >
+            Search Radius
           </label>
           <select
+            id="neighborhood-radius"
             value={form.radius}
             onChange={(e) =>
               setForm({ ...form, radius: Number(e.target.value) })

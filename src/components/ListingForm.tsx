@@ -48,16 +48,118 @@ export default function ListingForm() {
     <div className="mx-auto p-4">
       <h2 className="text-2xl font-bold mb-4 text-center">Listing Generator</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {Object.keys(form).map((key) => (
+        <div>
+          <label
+            htmlFor="listing-address"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Address
+          </label>
           <input
-            key={key}
+            id="listing-address"
             type="text"
-            placeholder={key}
-            value={form[key as keyof typeof form]}
-            onChange={(e) => setForm({ ...form, [key]: e.target.value })}
+            placeholder="Enter property address"
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
             className="border p-2 w-full"
           />
-        ))}
+        </div>
+        <div>
+          <label
+            htmlFor="listing-price"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Price
+          </label>
+          <input
+            id="listing-price"
+            type="text"
+            placeholder="Enter property price"
+            value={form.price}
+            onChange={(e) => setForm({ ...form, price: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="listing-bedrooms"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Bedrooms
+          </label>
+          <input
+            id="listing-bedrooms"
+            type="number"
+            placeholder="Number of bedrooms"
+            value={form.bedrooms}
+            onChange={(e) => setForm({ ...form, bedrooms: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="listing-bathrooms"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Bathrooms
+          </label>
+          <input
+            id="listing-bathrooms"
+            type="number"
+            placeholder="Number of bathrooms"
+            value={form.bathrooms}
+            onChange={(e) => setForm({ ...form, bathrooms: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="listing-sqft"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Square Feet
+          </label>
+          <input
+            id="listing-sqft"
+            type="number"
+            placeholder="Property square footage"
+            value={form.sqft}
+            onChange={(e) => setForm({ ...form, sqft: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="listing-features"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Features (comma-separated)
+          </label>
+          <input
+            id="listing-features"
+            type="text"
+            placeholder="Pool, garage, updated kitchen, etc."
+            value={form.features}
+            onChange={(e) => setForm({ ...form, features: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="listing-tone"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Tone
+          </label>
+          <input
+            id="listing-tone"
+            type="text"
+            placeholder="professional, friendly, etc."
+            value={form.tone}
+            onChange={(e) => setForm({ ...form, tone: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
         <button
           className="bg-blue-600 text-white p-2 rounded w-full"
           style={{ backgroundColor: "#007bff" }}
