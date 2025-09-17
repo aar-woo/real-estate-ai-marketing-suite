@@ -18,15 +18,15 @@ export default function Tabs({ tabs, defaultTab }: TabsProps) {
 
   return (
     <div className="w-full">
-      <div className="flex border-b border-white-200 mb-6">
+      <div className="flex justify-center border-b border-gray-200 mb-6 bg-gray-100 p-4 rounded-b-lg">
         {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-6 py-3 text-sm font-medium transition-colors duration-200 rounded-t-lg cursor-pointer ${
+            className={`px-6 py-3 text-sm font-medium transition-all duration-200 rounded-lg cursor-pointer mx-1 ${
               activeTab === tab.id
-                ? "text-blue-700 bg-white"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                ? "text-white bg-gradient-to-r from-green-500 to-emerald-600 shadow-md transform scale-105"
+                : "text-gray-600 hover:text-green-700 hover:bg-white/70 hover:shadow-sm"
             }`}
           >
             {tab.label}
