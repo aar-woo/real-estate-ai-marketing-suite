@@ -64,8 +64,8 @@ export default function ListingForm() {
 
   return (
     <div className="mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">Listing Generator</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <h2 className="text-2xl font-bold mb-2 text-center">Listing Generator</h2>
+      <form onSubmit={handleSubmit} className="space-y-2">
         <div>
           <label
             htmlFor="listing-address"

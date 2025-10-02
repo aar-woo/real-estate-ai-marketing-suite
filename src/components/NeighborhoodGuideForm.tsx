@@ -128,10 +128,10 @@ export default function NeighborhoodGuideForm() {
 
   return (
     <div className="mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">
+      <h2 className="text-2xl font-bold mb-2 text-center">
         Neighborhood Guide Generator
       </h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
           <label
             htmlFor="neighborhood-address"

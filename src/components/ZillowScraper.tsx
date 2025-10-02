@@ -115,7 +115,7 @@ export default function ZillowScraper() {
 
   return (
     <div className="mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-center">
+      <h1 className="text-2xl font-bold mb-2 text-center">
         Zillow Listing Scraper
       </h1>
       <form onSubmit={handleSubmit} className="mb-8">
