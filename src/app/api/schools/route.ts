@@ -79,9 +79,6 @@ export async function GET(request: NextRequest) {
 
     const apiUrl = `https://api.schooldigger.com/v2.3/schools?${queryString}`;
 
-    console.log("SchoolDigger search URL:", apiUrl);
-    console.log("Search parameters:", apiSearchParams);
-
     const response = await fetch(apiUrl, {
       method: "GET",
       headers: {
