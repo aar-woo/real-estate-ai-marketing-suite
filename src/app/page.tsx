@@ -23,9 +23,9 @@ const tabs = [
 
 export default function Home() {
   return (
-    <div className="font-sans flex flex-col items-center min-h-screen gap-8">
+    <div className="font-sans flex flex-col items-center min-h-screen">
       <header
-        className="w-full h-[140px] flex items-center justify-center"
+        className="w-full h-[90px] flex items-center justify-center"
         style={{
           position: "relative",
           backgroundImage: "url(/images/abstract-square-houses.png)",
@@ -40,7 +40,7 @@ export default function Home() {
           </h1>
         </div>
       </header>
-      <main className="flex flex-col gap-[32px] items-center sm:items-start w-full max-w-6xl sm:px-12">
+      <main className="flex flex-col gap-[32px] items-center sm:items-start w-full">
         <Tabs tabs={tabs} defaultTab="zillow-scraper" />
       </main>
     </div>

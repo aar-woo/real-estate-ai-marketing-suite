@@ -4,6 +4,16 @@ import { useState } from "react";
 import PlaceCard from "./PlaceCard";
 import type { NeighborhoodGuideData } from "@/lib/prompts";
 import { ExtendedPlace, PlacesApiResponse } from "@/lib/placesTypes";
+import { getParsedAddress, validAddress } from "@/lib/addressUtils";
+import { convertDistance } from "geolib";
+import SchoolCard, { School } from "./SchoolCard";
+
+const placeTypes = [
+  { value: "restaurant", label: "Restaurants", emoji: "🍔" },
+  { value: "park", label: "Parks", emoji: "🌳" },
+  { value: "tourist_attraction", label: "Landmarks", emoji: "🏙️" },
+  { value: "school", label: "Schools", emoji: "📚" },
+];
 
 export default function NeighborhoodGuideForm() {
   const [form, setForm] = useState({
@@ -14,26 +24,34 @@ export default function NeighborhoodGuideForm() {
     tone: "professional",
     radius: 5000,
   });
-
   const [result, setResult] = useState("");
-  const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([
+    "restaurant",
+    "park",
+    "tourist_attraction",
+    "school",
+  ]);
+  const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
+  const [schoolsData, setSchoolsData] = useState<any | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setIsLoading(true);
 
     try {
+      if (!validAddress(form.address)) {
+        throw new Error(
+          "Invalid address, please enter a valid address in the format of '123 Main St, City, State, Zip'"
+        );
+      }
       await handleGetPlaces();
+      if (selectedTypes.includes("school")) {
+        await handleGetSchools();
+      }
 
       const payload: NeighborhoodGuideData = {
         address: form.address || "",
-        schools: form.schools
-          ? form.schools
-              .split(",")
-              .map((s) => s.trim())
-              .filter(Boolean)
-          : [],
         audience: form.audience as
           | "investors"
           | "sellers"
@@ -84,49 +102,133 @@ export default function NeighborhoodGuideForm() {
     setPlacesData(placesData);
   };
 
+  const handleGetSchools = async () => {
+    const parsedAddress = getParsedAddress(form.address);
+    const radiusInMiles = convertDistance(form.radius, "mi");
+    const params = new URLSearchParams({
+      ...(parsedAddress.state && { state: parsedAddress.state }),
+      ...(parsedAddress.zipCode && { zip: parsedAddress.zipCode }),
+      ...(parsedAddress.city && { city: parsedAddress.city }),
+      ...(radiusInMiles < 1
+        ? { radius: "1" }
+        : { radius: radiusInMiles.toString() }),
+    });
+
+    const schoolsResponse = await fetch(`/api/schools?${params}`);
+    const schoolsData = await schoolsResponse.json();
+
+    setSchoolsData(schoolsData.schools);
+  };
+
+  const handleTypeToggle = (type: string) => {
+    setSelectedTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
   return (
-    <div className="max-w-lg mx-auto p-4">
-      <h2 className="text-xl font-bold mb-4 text-center">
+    <div className="mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4 text-center">
         Neighborhood Guide Generator
       </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          placeholder="Address"
-          value={form.address}
-          onChange={(e) => setForm({ ...form, address: e.target.value })}
-          className="border p-2 w-full"
-          required
-        />
-        <input
-          type="text"
-          placeholder="Schools"
-          value={form.schools}
-          onChange={(e) => setForm({ ...form, schools: e.target.value })}
-          className="border p-2 w-full"
-        />
-        <select
-          value={form.audience}
-          onChange={(e) => setForm({ ...form, audience: e.target.value })}
-          className="border p-2 w-full"
-        >
-          <option value="buyers">Buyers</option>
-          <option value="sellers">Sellers</option>
-          <option value="investors">Investors</option>
-          <option value="renters">Renters</option>
-        </select>
-        <input
-          type="text"
-          placeholder="Tone (professional, friendly, etc.)"
-          value={form.tone}
-          onChange={(e) => setForm({ ...form, tone: e.target.value })}
-          className="border p-2 w-full"
-        />
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Search Radius (meters)
+          <label
+            htmlFor="neighborhood-address"
+            className="inline-block text-sm font-medium text-white mb-1"
+          >
+            Address
+          </label>
+          <input
+            id="neighborhood-address"
+            type="text"
+            placeholder="Enter property address"
+            value={form.address}
+            onChange={(e) => setForm({ ...form, address: e.target.value })}
+            className="border p-2 w-full"
+            required
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="neighborhood-audience"
+            className="block text-sm font-medium text-white mb-1"
+          >
+            Target Audience
           </label>
           <select
+            id="neighborhood-audience"
+            value={form.audience}
+            onChange={(e) => setForm({ ...form, audience: e.target.value })}
+            className="border p-2 w-full"
+          >
+            <option value="buyers">Buyers</option>
+            <option value="sellers">Sellers</option>
+            <option value="investors">Investors</option>
+            <option value="renters">Renters</option>
+          </select>
+        </div>
+        <div>
+          <label
+            htmlFor="neighborhood-tone"
+            className="block text-sm font-medium text-white mb-1"
+          >
+            Tone
+          </label>
+          <input
+            id="neighborhood-tone"
+            type="text"
+            placeholder="professional, friendly, etc."
+            value={form.tone}
+            onChange={(e) => setForm({ ...form, tone: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label
+            htmlFor="neighborhood-keyPoints"
+            className="block text-sm font-medium text-white mb-1"
+          >
+            Key Points (comma-separated)
+          </label>
+          <input
+            id="neighborhood-keyPoints"
+            type="text"
+            placeholder="Walkable neighborhood, great schools, etc."
+            value={form.keyPoints}
+            onChange={(e) => setForm({ ...form, keyPoints: e.target.value })}
+            className="border p-2 w-full"
+          />
+        </div>
+        <div>
+          <label className="text-md font-bold mb-2">Place Types</label>
+          <ul className="flex flex-row w-full gap-5">
+            {placeTypes.map((type) => (
+              <li key={type.value} className="flex items-center gap-1">
+                <input
+                  type="checkbox"
+                  id={type.value}
+                  checked={selectedTypes.includes(type.value)}
+                  onChange={() => handleTypeToggle(type.value)}
+                  className="border p-2 w-full"
+                />
+                <label htmlFor={type.value} className="flex items-center gap-1">
+                  <span className="text-sm">{type.label}</span>
+                  <span className="text-sm">{type.emoji}</span>
+                </label>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <label
+            htmlFor="neighborhood-radius"
+            className="block text-sm font-medium text-white mb-1"
+          >
+            Search Radius
+          </label>
+          <select
+            id="neighborhood-radius"
             value={form.radius}
             onChange={(e) =>
               setForm({ ...form, radius: Number(e.target.value) })
@@ -178,12 +280,12 @@ export default function NeighborhoodGuideForm() {
 
       {result && placesData && (
         <div className="mt-6 p-4 border rounded">
-          <h3 className="font-bold">Generated Guide:</h3>
+          <h2 className="text-lg font-bold">Generated Guide:</h2>
           <div className="whitespace-pre-wrap">{result}</div>
           <section>
-            <h2 className="text-lg font-bold underline my-2">
+            <h3 className="text-lg font-bold underline my-2">
               Places In the Neighborhood
-            </h2>
+            </h3>
             <div className="flex flex-row flex-wrap gap-4">
               {Object.entries(placesData.places).map(
                 ([placeType, places]: [string, ExtendedPlace[]]) =>
@@ -193,6 +295,16 @@ export default function NeighborhoodGuideForm() {
               )}
             </div>
           </section>
+          {schoolsData && (
+            <section className="mt-6">
+              <h3 className="text-lg font-bold underline my-2">Schools</h3>
+              <div className="flex flex-row gap-4">
+                {schoolsData.map((school: School) => (
+                  <SchoolCard key={school.id} school={school} />
+                ))}
+              </div>
+            </section>
+          )}
         </div>
       )}
     </div>
