@@ -1,4 +1,13 @@
-export function formatAddress(addressObj: any): string {
+interface AddressObject {
+  streetAddress?: string;
+  city?: string;
+  state?: string;
+  zipcode?: string;
+}
+
+export function formatAddress(
+  addressObj: AddressObject | string | null | undefined
+): string {
   if (!addressObj) return "";
   if (typeof addressObj === "string") return addressObj;
   return `${addressObj.streetAddress || ""}, ${addressObj.city || ""}, ${
@@ -6,7 +15,7 @@ export function formatAddress(addressObj: any): string {
   } ${addressObj.zipcode || ""}`.trim();
 }
 
-export function formatPrice(price: any): string {
+export function formatPrice(price: number | string | null | undefined): string {
   if (!price) return "Price not found";
   if (typeof price === "number") return `$${price.toLocaleString()}`;
   if (typeof price === "string")
@@ -14,7 +23,9 @@ export function formatPrice(price: any): string {
   return "Price not found";
 }
 
-export function formatPropertyType(homeType: any): string {
+export function formatPropertyType(
+  homeType: string | null | undefined
+): string {
   if (!homeType) return "Property type not found";
   if (typeof homeType === "string") {
     return homeType.replace(/_/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
@@ -22,7 +33,18 @@ export function formatPropertyType(homeType: any): string {
   return "Property type not found";
 }
 
-export function extractFeatures(scrapedData: any): string[] {
+interface ScrapedPropertyData {
+  bedrooms?: number | string;
+  bathrooms?: number | string;
+  parkingCapacity?: number | string;
+  resoFacts?: {
+    appliances?: string[];
+    view?: string[];
+    cooling?: string[];
+  };
+}
+
+export function extractFeatures(scrapedData: ScrapedPropertyData): string[] {
   const features: string[] = [];
 
   // Add basic property features
@@ -50,19 +72,31 @@ export function extractFeatures(scrapedData: any): string[] {
   return features.length > 0 ? features : ["Features not found"];
 }
 
-export function extractImages(scrapedData: any): string[] {
+interface PhotoData {
+  url?: string;
+  mixedSources?: {
+    jpeg?: Array<{ url?: string }>;
+  };
+}
+
+interface ScrapedImageData {
+  responsivePhotos?: PhotoData[];
+  originalPhotos?: PhotoData[];
+}
+
+export function extractImages(scrapedData: ScrapedImageData): string[] {
   const images: string[] = [];
 
   // Add responsive photos
   if (scrapedData.responsivePhotos) {
-    scrapedData.responsivePhotos.forEach((photo: any) => {
+    scrapedData.responsivePhotos.forEach((photo) => {
       if (photo.url) images.push(photo.url);
     });
   }
 
   // Add original photos
   if (scrapedData.originalPhotos) {
-    scrapedData.originalPhotos.forEach((photo: any) => {
+    scrapedData.originalPhotos.forEach((photo) => {
       if (photo.mixedSources?.jpeg?.[0]?.url) {
         images.push(photo.mixedSources.jpeg[0].url);
       }
@@ -72,11 +106,17 @@ export function extractImages(scrapedData: any): string[] {
   return images.length > 0 ? images.slice(0, 5) : ["Images not found"];
 }
 
-export function extractSchoolDistrict(scrapedData: any): string {
+interface SchoolData {
+  name?: string;
+}
+
+export function extractSchoolDistrict(
+  scrapedData: SchoolData[] | null | undefined
+): string {
   if (!scrapedData || !Array.isArray(scrapedData))
     return "School district not found";
 
-  const schools = scrapedData.map((school: any) => school.name).filter(Boolean);
+  const schools = scrapedData.map((school) => school.name).filter(Boolean);
   return schools.length > 0 ? schools.join(", ") : "School district not found";
 }
 

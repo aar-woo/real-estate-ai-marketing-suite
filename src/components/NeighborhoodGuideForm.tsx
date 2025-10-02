@@ -33,7 +33,7 @@ export default function NeighborhoodGuideForm() {
     "school",
   ]);
   const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
-  const [schoolsData, setSchoolsData] = useState<any | null>(null);
+  const [schoolsData, setSchoolsData] = useState<School[] | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -288,7 +288,7 @@ export default function NeighborhoodGuideForm() {
             </h3>
             <div className="flex flex-row flex-wrap gap-4">
               {Object.entries(placesData.places).map(
-                ([placeType, places]: [string, ExtendedPlace[]]) =>
+                ([, places]: [string, ExtendedPlace[]]) =>
                   places.map((place: ExtendedPlace) => (
                     <PlaceCard key={place.id} place={place} showPhoto={true} />
                   ))
