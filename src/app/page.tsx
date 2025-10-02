@@ -1,7 +1,11 @@
+"use client";
+
+import { useState, useEffect } from "react";
 import ListingForm from "@/components/ListingForm";
 import NeighborhoodGuideForm from "@/components/NeighborhoodGuideForm";
 import ZillowScraper from "@/components/ZillowScraper";
 import Tabs from "@/components/Tabs";
+import GatedLandingPage from "@/components/GatedLandingPage";
 
 const tabs = [
   {
@@ -22,6 +26,37 @@ const tabs = [
 ];
 
 export default function Home() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = () => {
+      const authenticated = sessionStorage.getItem("authenticated");
+      setIsAuthenticated(authenticated === "true");
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleAuthenticated = () => {
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("authenticated");
+    setIsAuthenticated(false);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="font-sans flex flex-col items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <p className="mt-4 text-gray-600">Loading...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="font-sans flex flex-col items-center min-h-screen">
       <header
@@ -39,9 +74,21 @@ export default function Home() {
             Real Estate AI Marketing Suite
           </h1>
         </div>
+        {isAuthenticated && (
+          <button
+            onClick={handleLogout}
+            className="absolute top-4 right-4 bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md text-sm transition-colors duration-200"
+          >
+            Logout
+          </button>
+        )}
       </header>
       <main className="flex flex-col gap-[32px] items-center sm:items-start w-full">
-        <Tabs tabs={tabs} defaultTab="zillow-scraper" />
+        {!isAuthenticated ? (
+          <GatedLandingPage onAuthenticated={handleAuthenticated} />
+        ) : (
+          <Tabs tabs={tabs} defaultTab="zillow-scraper" />
+        )}
       </main>
     </div>
   );
