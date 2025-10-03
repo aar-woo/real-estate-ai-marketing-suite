@@ -111,10 +111,68 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const data: any = await response.json();
+    interface SchoolData {
+      schoolid: string;
+      schoolName: string;
+      phone?: string;
+      url?: string;
+      address?: {
+        street?: string;
+        city?: string;
+        state?: string;
+        zip?: string;
+        latLong?: {
+          latitude: number;
+          longitude: number;
+        };
+      };
+      district?: {
+        districtID?: string;
+        districtName?: string;
+        url?: string;
+      };
+      schoolLevel?: string;
+      isPrivate?: boolean;
+      isCharterSchool?: string;
+      isMagnetSchool?: string;
+      isVirtualSchool?: string;
+      lowGrade?: string;
+      highGrade?: string;
+      schoolYearlyDetails?: Array<{
+        year?: number;
+        averageStandardScore?: number;
+        schoolRanking?: {
+          rank?: number;
+          rankOf?: number;
+        };
+        numberOfStudents?: number;
+        pupilTeacherRatio?: number;
+        percentFreeDiscLunch?: number;
+        percentofAfricanAmericanStudents?: number;
+        percentofAsianStudents?: number;
+        percentofHispanicStudents?: number;
+        percentofWhiteStudents?: number;
+        teachersFulltime?: number;
+      }>;
+      rankHistory?: Array<{
+        year?: number;
+        rank?: number;
+        rankOf?: number;
+      }>;
+      testScores?: unknown[];
+      chronicAbsenteeismRates?: unknown[];
+      rankMovement?: number;
+      finance?: unknown[];
+    }
+
+    const data: {
+      schoolList?: SchoolData[];
+      numberOfSchools?: number;
+      numberOfPages?: number;
+    } = await response.json();
 
     const transformedSchools =
-      data.schoolList?.map((school: any) => ({
+      data.schoolList?.map((school) => ({
         id: school.schoolid,
         name: school.schoolName,
         phone: school.phone,

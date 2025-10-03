@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { PropertyData } from "@/lib/prompts";
-import { getParsedAddress, validAddress } from "@/lib/addressUtils";
+import { validAddress } from "@/lib/addressUtils";
 
 export default function ListingForm() {
   // Keep form state as strings for inputs; convert to PropertyData on submit
@@ -22,10 +22,12 @@ export default function ListingForm() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    // Validate required fields
     if (!validAddress(form.address)) {
-      throw new Error(
+      alert(
         "Invalid address, please enter a valid address in the format of '123 Main St, City, State, Zip'"
       );
+      return;
     }
 
     setIsLoading(true);
@@ -62,8 +64,8 @@ export default function ListingForm() {
 
   return (
     <div className="mx-auto p-4">
-      <h2 className="text-2xl font-bold mb-4 text-center">Listing Generator</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <h2 className="text-2xl font-bold mb-2 text-center">Listing Generator</h2>
+      <form onSubmit={handleSubmit} className="space-y-2">
         <div>
           <label
             htmlFor="listing-address"

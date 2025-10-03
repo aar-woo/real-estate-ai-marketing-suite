@@ -4,7 +4,7 @@ interface AddressComponents {
   city?: string;
 }
 
-// @ts-ignore
+// @ts-expect-error - parse-address doesn't have TypeScript definitions
 import * as parseAddress from "parse-address";
 
 export function getParsedAddress(address: string): AddressComponents {
