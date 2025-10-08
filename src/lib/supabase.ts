@@ -36,13 +36,3 @@ export const getCurrentUser = async () => {
   } = await supabase.auth.getUser();
   return user;
 };
-
-export const checkUserEmailExists = async (email: string) => {
-  const { data: existingUser } = await supabase
-    .from("auth.users")
-    .select("id")
-    .eq("email", email)
-    .single();
-
-  return existingUser;
-};

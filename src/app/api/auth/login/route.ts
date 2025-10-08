@@ -1,8 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  signInWithEmail,
-  checkUserEmailExists,
-} from "../../../../lib/supabase";
+import { signInWithEmail } from "../../../../lib/supabase";
 
 export async function POST(request: NextRequest) {
   try {
@@ -12,15 +9,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Email and password are required" },
         { status: 400 }
-      );
-    }
-
-    const existingUser = await checkUserEmailExists(email);
-
-    if (!existingUser) {
-      return NextResponse.json(
-        { error: "User does not exist" },
-        { status: 404 }
       );
     }
 
