@@ -35,18 +35,16 @@ export default function Tabs({ tabs, defaultTab }: TabsProps) {
         ))}
       </div>
 
-      <div>
-        {tabs.map((tab) => (
-          <div
-            key={tab.id}
-            className={`transition-opacity duration-200 ${
-              activeTab === tab.id ? "opacity-100" : "opacity-0 hidden"
-            }`}
-          >
-            <PageContainer>{tab.content}</PageContainer>
-          </div>
-        ))}
-      </div>
+      {tabs.map((tab) => (
+        <div
+          key={tab.id}
+          className={`flex justify-center transition-opacity duration-200 ${
+            activeTab === tab.id ? "opacity-100" : "opacity-0 hidden"
+          }`}
+        >
+          <PageContainer>{tab.content}</PageContainer>
+        </div>
+      ))}
     </div>
   );
 }

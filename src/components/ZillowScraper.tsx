@@ -114,7 +114,7 @@ export default function ZillowScraper() {
   };
 
   return (
-    <div className="mx-auto p-4">
+    <div className="w-full max-w-4xl">
       <h1 className="text-2xl font-bold mb-2 text-center">
         Zillow Listing Scraper
       </h1>
