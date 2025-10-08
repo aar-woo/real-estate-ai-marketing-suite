@@ -11,6 +11,7 @@
   "dependencies": {
     "@apify/scraper-tools": "^1.1.5-beta.283",
     "@googlemaps/google-maps-services-js": "^3.4.2",
+    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.58.0",
     "geolib": "^3.3.4",
     "next": "15.4.6",
