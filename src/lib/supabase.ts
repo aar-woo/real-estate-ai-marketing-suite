@@ -23,13 +23,6 @@ export const signUpWithEmail = async (email: string, password: string) => {
   return { data, error };
 };
 
-export const signOut = async () => {
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.signOut();
-  return { error };
-};
-
 export const getCurrentUser = async () => {
   const supabase = await createClient();
 
