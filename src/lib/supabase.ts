@@ -1,15 +1,11 @@
-import { createClient } from "@supabase/supabase-js";
+"use server";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
-
-export const supabase = createClient(
-  supabaseUrl || "https://placeholder.supabase.co",
-  supabaseAnonKey || "placeholder-key"
-);
+import { createClient } from "@/utils/supabase/server";
 
 // Auth helper functions
 export const signInWithEmail = async (email: string, password: string) => {
+  const supabase = await createClient();
+
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -18,6 +14,8 @@ export const signInWithEmail = async (email: string, password: string) => {
 };
 
 export const signUpWithEmail = async (email: string, password: string) => {
+  const supabase = await createClient();
+
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -25,12 +23,9 @@ export const signUpWithEmail = async (email: string, password: string) => {
   return { data, error };
 };
 
-export const signOut = async () => {
-  const { error } = await supabase.auth.signOut();
-  return { error };
-};
-
 export const getCurrentUser = async () => {
+  const supabase = await createClient();
+
   const {
     data: { user },
   } = await supabase.auth.getUser();

@@ -68,7 +68,6 @@ The project includes API routes support. Example API endpoints:
 
 - **GET** `/api/hello` - Returns a greeting message
 - **POST** `/api/hello` - Accepts JSON data and returns it with metadata
-- **POST** `/api/generate-content` - Generates property descriptions and PDFs using AI
 - **POST** `/api/generate-listing` - Generates property listings using AI
 - **POST** `/api/generate-neighborhood-guide` - Generates neighborhood guides using AI
 - **GET** `/api/places` - Search for nearby restaurants, parks, landmarks, and other points of interest
@@ -240,21 +239,6 @@ curl http://localhost:3000/api/hello
 curl -X POST http://localhost:3000/api/hello \
   -H "Content-Type: application/json" \
   -d '{"name": "John", "message": "Hello!"}'
-
-# Generate property content
-curl -X POST http://localhost:3000/api/generate-content \
-  -H "Content-Type: application/json" \
-  -d '{
-    "propertyDetails": {
-      "address": "123 Main St, City, State",
-      "price": "$450,000",
-      "bedrooms": 3,
-      "bathrooms": 2,
-      "sqft": 1800,
-      "features": ["Updated kitchen", "Hardwood floors", "Fenced yard"]
-    },
-    "generatePDF": true
-  }'
 ```
 
 ## Technologies Used

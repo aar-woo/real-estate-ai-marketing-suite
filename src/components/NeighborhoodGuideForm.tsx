@@ -127,7 +127,7 @@ export default function NeighborhoodGuideForm() {
   };
 
   return (
-    <div className="mx-auto p-4">
+    <div className="w-full max-w-4xl">
       <h2 className="text-2xl font-bold mb-2 text-center">
         Neighborhood Guide Generator
       </h2>
