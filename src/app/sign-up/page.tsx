@@ -95,6 +95,7 @@ export default function SignUpPage() {
               id="password"
               name="password"
               type="password"
+              autoComplete="off"
               value={formState?.password}
               onChange={onChange}
               required

@@ -82,6 +82,7 @@ export default function LoginPage() {
               id="password"
               name="password"
               type="password"
+              autoComplete="off"
               required
               value={formState.password}
               onChange={handleChange}
