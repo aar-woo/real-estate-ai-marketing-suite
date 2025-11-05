@@ -39,7 +39,7 @@ export default function SchoolCard({ school }: { school: School }) {
   );
 
   return (
-    <div className="flex flex-col justify-between w-100 border border-gray-200 bg-white rounded-lg p-4 ">
+    <div className="flex flex-col justify-between w-full md:w-[calc(50%-8px)] border border-gray-200 bg-white rounded-lg p-4">
       <div className="flex items-start justify-between mb-3">
         <h4 className="font-semibold text-gray-800 text-lg leading-tight">
           {school.name}

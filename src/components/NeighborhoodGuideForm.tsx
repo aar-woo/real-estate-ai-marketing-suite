@@ -298,7 +298,7 @@ export default function NeighborhoodGuideForm() {
           {schoolsData && (
             <section className="mt-6">
               <h3 className="text-lg font-bold underline my-2">Schools</h3>
-              <div className="flex flex-row gap-4">
+              <div className="flex flex-row flex-wrap gap-4">
                 {schoolsData.map((school: School) => (
                   <SchoolCard key={school.id} school={school} />
                 ))}
