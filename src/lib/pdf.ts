@@ -1,4 +1,17 @@
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
+import type { NeighborhoodGuideData } from "./prompts";
+function sanitizeTextForPDF(text: string): string {
+  if (!text) return "";
+
+  return text
+    .replace(/[\u2018\u2019\u02BB]/g, "'")
+    .replace(/[\u201C\u201D]/g, '"')
+    .replace(/[\u2013\u2014]/g, "-")
+    .replace(/[\u2026]/g, "...")
+    .replace(/[\u2022\u2023\u25E6\u2043]/g, "*")
+    .replace(/[\u2605\u2606]/g, "*")
+    .replace(/[^\x20-\x7E\xA0-\xFF]/g, "");
+}
 
 export interface PropertyListing {
   address: string;
