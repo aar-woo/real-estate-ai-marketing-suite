@@ -318,15 +318,14 @@ export default function NeighborhoodGuideForm() {
           )}
         </button>
       </form>
-      {result && (
-        <button
-          onClick={handleGenerateNeighborhoodGuidePDF}
-          className="my-4 bg-blue-600 text-white p-2 rounded w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          style={{ backgroundColor: "#453FEEFF" }}
-        >
-          Generate Guide PDF
-        </button>
-      )}
+      <button
+        onClick={handleGenerateNeighborhoodGuidePDF}
+        className="my-4 bg-blue-600 text-white p-2 rounded w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ backgroundColor: "#453FEEFF" }}
+        disabled={!result}
+      >
+        Generate Guide PDF
+      </button>
 
       {result && placesData && (
         <div className="mt-6 p-4 border rounded">
