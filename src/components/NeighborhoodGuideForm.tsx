@@ -7,6 +7,7 @@ import { ExtendedPlace, PlacesApiResponse } from "@/lib/placesTypes";
 import { getParsedAddress, validAddress } from "@/lib/addressUtils";
 import { convertDistance } from "geolib";
 import SchoolCard, { School } from "./SchoolCard";
+import { createNeighborhoodGuidePDF } from "@/lib/pdf";
 
 const placeTypes = [
   { value: "restaurant", label: "Restaurants", emoji: "🍔" },
@@ -124,6 +125,46 @@ export default function NeighborhoodGuideForm() {
     setSelectedTypes((prev) =>
       prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
     );
+  };
+
+  const handleGenerateNeighborhoodGuidePDF = async () => {
+    const guideInput: Partial<NeighborhoodGuideData> & { images?: string[] } = {
+      address: form.address || "",
+      audience: form.audience as "investors" | "sellers" | "buyers" | "renters",
+      keyPoints: form.keyPoints
+        ? form.keyPoints
+            .split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [],
+      tone: form.tone || undefined,
+      places: placesData?.places
+        ? {
+            restaurant: placesData.places.restaurant || [],
+            park: placesData.places.park || [],
+            tourist_attraction: placesData.places.tourist_attraction || [],
+          }
+        : undefined,
+      schools: schoolsData?.map((s) => s.name),
+      images: [],
+    };
+    const pdfBytes = await createNeighborhoodGuidePDF(guideInput);
+    const copied = new Uint8Array(pdfBytes);
+    const arrayBuffer = copied.buffer as ArrayBuffer;
+    const blob = new Blob([arrayBuffer], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const slug =
+      (form.address || "neighborhood")
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9\-]/g, "") || "neighborhood";
+    link.href = url;
+    link.download = `neighborhood-guide-${slug}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -277,6 +318,14 @@ export default function NeighborhoodGuideForm() {
           )}
         </button>
       </form>
+      <button
+        onClick={handleGenerateNeighborhoodGuidePDF}
+        className="my-4 bg-blue-600 text-white p-2 rounded w-full flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        style={{ backgroundColor: "#453FEEFF" }}
+        disabled={!result}
+      >
+        Generate Guide PDF
+      </button>
 
       {result && placesData && (
         <div className="mt-6 p-4 border rounded">
