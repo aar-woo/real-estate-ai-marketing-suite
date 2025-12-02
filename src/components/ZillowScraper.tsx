@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PropertyData } from "@/lib/prompts";
 import { getPriceLevelText, getRatingStars } from "@/lib/placesInfoUtils";
 import { PlacesApiResponse, ExtendedPlace } from "@/lib/placesTypes";
+import { Skeleton } from "./ui/skeleton";
 
 interface ZillowData {
   address: string;
@@ -174,6 +175,18 @@ export default function ZillowScraper() {
           Get Places Nearby
         </button>
       </form>
+
+      {(isLoading || isGeneratingListing) && (
+          <Skeleton className="h-100 flex items-center justify-center bg-stone-300">
+            <div className="flex justify-center items-center space-x-4">
+              <Skeleton className="h-12 w-12 rounded-full" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
+              </div>
+            </div>
+          </Skeleton>
+      )}
 
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
