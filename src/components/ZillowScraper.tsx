@@ -152,7 +152,7 @@ export default function ZillowScraper() {
         <button
           type="button"
           disabled={isLoading || !url}
-          className="bg-green-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer bg-green-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleSubmit}
         >
           {isLoading ? "Scraping..." : "Scrape Listing"}
@@ -160,7 +160,7 @@ export default function ZillowScraper() {
         <button
           type="button"
           disabled={!result || isLoading}
-          className="bg-blue-600 text-white mx-3 px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer bg-blue-600 text-white mx-3 px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleGenerateListing}
         >
           {isGeneratingListing ? "Generating Listing..." : "Generate Listing"}
@@ -168,7 +168,7 @@ export default function ZillowScraper() {
         <button
           type="button"
           disabled={!result || isLoading}
-          className="bg-blue-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleGetPlaces}
         >
           Get Places Nearby
