@@ -4,6 +4,7 @@ import { useState } from "react";
 import { PropertyData } from "@/lib/prompts";
 import { getPriceLevelText, getRatingStars } from "@/lib/placesInfoUtils";
 import { PlacesApiResponse, ExtendedPlace } from "@/lib/placesTypes";
+import { Skeleton } from "./ui/skeleton";
 
 interface ZillowData {
   address: string;
@@ -35,6 +36,7 @@ export default function ZillowScraper() {
   const [url, setUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingListing, setIsGeneratingListing] = useState(false);
+  const [isGettingPlaces, setIsGettingPlaces] = useState(false);
   const [result, setResult] = useState<ScrapeResponse | null>(null);
   const [generatedListing, setGeneratedListing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -97,6 +99,7 @@ export default function ZillowScraper() {
   };
 
   const handleGetPlaces = async () => {
+    setIsGettingPlaces(true);
     const params = new URLSearchParams({
       location: result?.data.address || "",
       radius: "5000",
@@ -111,6 +114,7 @@ export default function ZillowScraper() {
       throw new Error(placesData.error || "Failed to fetch places");
     }
     setPlacesData(placesData);
+    setIsGettingPlaces(false);
   };
 
   return (
@@ -152,7 +156,7 @@ export default function ZillowScraper() {
         <button
           type="button"
           disabled={isLoading || !url}
-          className="bg-green-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer bg-green-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleSubmit}
         >
           {isLoading ? "Scraping..." : "Scrape Listing"}
@@ -160,7 +164,7 @@ export default function ZillowScraper() {
         <button
           type="button"
           disabled={!result || isLoading}
-          className="bg-blue-600 text-white mx-3 px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer bg-blue-600 text-white mx-3 px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleGenerateListing}
         >
           {isGeneratingListing ? "Generating Listing..." : "Generate Listing"}
@@ -168,221 +172,264 @@ export default function ZillowScraper() {
         <button
           type="button"
           disabled={!result || isLoading}
-          className="bg-blue-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+          className="cursor-pointer bg-blue-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleGetPlaces}
         >
           Get Places Nearby
         </button>
       </form>
-
-      {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-          <strong>Error:</strong> {error}
-        </div>
-      )}
-
-      {generatedListing && (
-        <div className="bg-blue-200 mb-4 text-black border border-blue-200 rounded-lg p-6">
-          <h3 className="font-semibold mb-3">Generated Listing</h3>
-          <p>{generatedListing}</p>
-        </div>
-      )}
-
-      {result && (
-        <div className="bg-green-50 text-black border border-green-200 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-semibold text-green-800">
-              Scraped Data
-            </h2>
-            <span className="text-sm text-green-600 bg-green-100 px-2 py-1 rounded">
-              {result.source}
-            </span>
-          </div>
-
-          {result.message && (
-            <p className="text-green-700 mb-4">{result.message}</p>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h3 className="font-semibold mb-3">Basic Information</h3>
+      <div className="flex flex-column flex-wrap gap-6">
+        {(isLoading || isGeneratingListing) && (
+          <Skeleton className="h-100 w-full flex items-center justify-center bg-stone-300">
+            <div className="flex justify-center items-center space-x-4">
+              <Skeleton className="h-12 w-12 rounded-full" />
               <div className="space-y-2">
-                <div>
-                  <strong>Address:</strong> {result.data.address}
-                </div>
-                <div>
-                  <strong>Price:</strong> {result.data.price}
-                </div>
-                <div>
-                  <strong>Beds:</strong> {result.data.beds}
-                </div>
-                <div>
-                  <strong>Baths:</strong> {result.data.baths}
-                </div>
-                <div>
-                  <strong>Square Feet:</strong> {result.data.sqft}
-                </div>
-                <div>
-                  <strong>Lot Size:</strong> {result.data.lotSize}
-                </div>
-                <div>
-                  <strong>Year Built:</strong> {result.data.yearBuilt}
-                </div>
-                <div>
-                  <strong>Property Type:</strong> {result.data.propertyType}
-                </div>
+                <Skeleton className="h-4 w-[250px]" />
+                <Skeleton className="h-4 w-[200px]" />
               </div>
             </div>
+          </Skeleton>
+        )}
 
-            <div>
-              <h3 className="font-semibold mb-3">Additional Details</h3>
-              <div className="space-y-2">
-                {result.data.zestimate && (
-                  <div>
-                    <strong>Zestimate:</strong> {result.data.zestimate}
-                  </div>
-                )}
-                {result.data.rentEstimate && (
-                  <div>
-                    <strong>Rent Estimate:</strong> {result.data.rentEstimate}
-                  </div>
-                )}
-                {result.data.neighborhood && (
-                  <div>
-                    <strong>Neighborhood:</strong> {result.data.neighborhood}
-                  </div>
-                )}
-                {result.data.schoolDistrict && (
-                  <div>
-                    <strong>School District:</strong>{" "}
-                    {result.data.schoolDistrict}
-                  </div>
-                )}
-              </div>
-            </div>
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+            <strong>Error:</strong> {error}
           </div>
+        )}
 
-          <div className="mt-6">
-            <h3 className="font-semibold mb-3">Description</h3>
-            <p className="text-gray-700">{result.data.description}</p>
+        {generatedListing && (
+          <div className="bg-blue-200 text-black border border-blue-200 rounded-lg p-6">
+            <h3 className="font-semibold mb-3">Generated Listing</h3>
+            <p>{generatedListing}</p>
           </div>
+        )}
 
-          {result.data.features.length > 0 && (
-            <div className="mt-6">
-              <h3 className="font-semibold mb-3">Features</h3>
-              <ul className="list-disc list-inside space-y-1">
-                {result.data.features.map((feature, index) => (
-                  <li key={index} className="text-gray-700">
-                    {feature}
-                  </li>
-                ))}
-              </ul>
+        {isGettingPlaces && (
+          <Skeleton className="h-100 w-full flex flex-col flex-wrap items-center justify-center bg-stone-300">
+            <Skeleton className="h-[125px] w-[250px] rounded-xl flex flex-column flex-wrap" />
+            <div className="space-y-2 mt-2">
+              <Skeleton className="h-4 w-[250px]" />
+              <Skeleton className="h-4 w-[200px]" />
             </div>
-          )}
+          </Skeleton>
+        )}
 
-          {result.data.images.length > 0 && (
-            <div className="mt-6">
-              <h3 className="font-semibold mb-3">
-                Images ({result.data.images.length})
-              </h3>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {result.data.images.map((image, index) => (
-                  <div
-                    key={index}
-                    className="aspect-video bg-gray-100 rounded overflow-hidden"
-                  >
-                    <img
-                      src={image}
-                      alt={`Property image ${index + 1}`}
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        const target = e.target as HTMLImageElement;
-                        target.style.display = "none";
-                      }}
-                    />
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {result.runId && (
-            <div className="mt-4 text-sm text-gray-500">
-              Apify Run ID: {result.runId}
-            </div>
-          )}
-        </div>
-      )}
-
-      {placesData && (
-        <section>
-          <h1 className="font-semibold text-xl mb-3 underline">
-            Places Nearby
-          </h1>
-          <div className="flex flex-row flex-wrap w-full gap-4">
-            {Object.entries(placesData.places).map(
-              ([placeType, places]: [string, ExtendedPlace[]]) =>
-                places.map((place: ExtendedPlace) => (
-                  <div
-                    key={place.id}
-                    className="border border-gray-200 bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
-                    style={{ width: "calc(50% - 8px)" }}
-                  >
-                    <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-gray-800 text-lg">
-                        {place.name}
-                      </h4>
-                      <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full capitalize">
-                        {placeType}
-                      </span>
-                    </div>
-
-                    <p className="text-gray-600 text-sm mb-2">
-                      {place.vicinity}
-                    </p>
-
-                    {place.rating && (
-                      <div className="flex items-center mb-2">
-                        <span className="text-yellow-500 mr-1">
-                          {getRatingStars(place.rating)}
-                        </span>
-                        <span className="text-sm text-gray-600">
-                          {place.rating} ({place.user_ratings_total} reviews)
+        {placesData && (
+          <section>
+            <h1 className="font-semibold text-xl mb-3 underline">
+              Places Nearby
+            </h1>
+            <div className="flex flex-row flex-wrap w-full gap-4">
+              {Object.entries(placesData.places).map(
+                ([placeType, places]: [string, ExtendedPlace[]]) =>
+                  places.map((place: ExtendedPlace) => (
+                    <div
+                      key={place.id}
+                      className="border border-gray-200 bg-white rounded-lg p-4 hover:shadow-md transition-shadow"
+                      style={{ width: "calc(50% - 8px)" }}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <h4 className="font-semibold text-gray-800 text-lg">
+                          {place.name}
+                        </h4>
+                        <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded-full capitalize">
+                          {placeType}
                         </span>
                       </div>
-                    )}
 
-                    <div className="flex items-center justify-between text-sm text-gray-500">
-                      <span>Price: {getPriceLevelText(place.price_level)}</span>
-                      {place.opening_hours !== undefined && (
-                        <span
-                          className={
-                            place.opening_hours
-                              ? "text-green-600"
-                              : "text-red-600"
-                          }
-                        >
-                          {place.opening_hours ? "Open" : "Closed"}
-                        </span>
+                      <p className="text-gray-600 text-sm mb-2">
+                        {place.vicinity}
+                      </p>
+
+                      {place.rating && (
+                        <div className="flex items-center mb-2">
+                          <span className="text-yellow-500 mr-1">
+                            {getRatingStars(place.rating)}
+                          </span>
+                          <span className="text-sm text-gray-600">
+                            {place.rating} ({place.user_ratings_total} reviews)
+                          </span>
+                        </div>
                       )}
+
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <span>
+                          Price: {getPriceLevelText(place.price_level)}
+                        </span>
+                        {place.opening_hours !== undefined && (
+                          <span
+                            className={
+                              place.opening_hours
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }
+                          >
+                            {place.opening_hours ? "Open" : "Closed"}
+                          </span>
+                        )}
+                      </div>
                     </div>
+                  ))
+              )}
+            </div>
+          </section>
+        )}
+
+        {result && (
+          <div className="bg-green-50 text-black border border-green-200 rounded-lg p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-green-800">
+                Scraped Data
+              </h2>
+              <span className="text-sm text-green-600 bg-green-100 px-2 py-1 rounded">
+                {result.source}
+              </span>
+            </div>
+
+            {result.message && (
+              <p className="text-green-700 mb-4">{result.message}</p>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <h3 className="font-semibold mb-3">Basic Information</h3>
+                <div className="space-y-2">
+                  <div>
+                    <strong>Address:</strong> {result.data.address}
                   </div>
-                ))
+                  <div>
+                    <strong>Price:</strong> {result.data.price}
+                  </div>
+                  <div>
+                    <strong>Beds:</strong> {result.data.beds}
+                  </div>
+                  <div>
+                    <strong>Baths:</strong> {result.data.baths}
+                  </div>
+                  <div>
+                    <strong>Square Feet:</strong> {result.data.sqft}
+                  </div>
+                  <div>
+                    <strong>Lot Size:</strong> {result.data.lotSize}
+                  </div>
+                  <div>
+                    <strong>Year Built:</strong> {result.data.yearBuilt}
+                  </div>
+                  <div>
+                    <strong>Property Type:</strong> {result.data.propertyType}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h3 className="font-semibold mb-3">Additional Details</h3>
+                <div className="space-y-2">
+                  {result.data.zestimate && (
+                    <div>
+                      <strong>Zestimate:</strong> {result.data.zestimate}
+                    </div>
+                  )}
+                  {result.data.rentEstimate && (
+                    <div>
+                      <strong>Rent Estimate:</strong> {result.data.rentEstimate}
+                    </div>
+                  )}
+                  {result.data.neighborhood && (
+                    <div>
+                      <strong>Neighborhood:</strong> {result.data.neighborhood}
+                    </div>
+                  )}
+                  {result.data.schoolDistrict && (
+                    <div>
+                      <strong>School District:</strong>{" "}
+                      {result.data.schoolDistrict}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="font-semibold mb-3">Description</h3>
+              <p className="text-gray-700">{result.data.description}</p>
+            </div>
+
+            {result.data.features.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold mb-3">Features</h3>
+                <ul className="list-disc list-inside space-y-1">
+                  {result.data.features.map((feature, index) => (
+                    <li key={index} className="text-gray-700">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {result.data.images.length > 0 && (
+              <div className="mt-6">
+                <h3 className="font-semibold mb-3">
+                  Images ({result.data.images.length})
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {result.data.images.map((image, index) => (
+                    <div
+                      key={index}
+                      className="aspect-video bg-gray-100 rounded overflow-hidden"
+                    >
+                      <img
+                        src={image}
+                        alt={`Property image ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = "none";
+                        }}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {result.runId && (
+              <div className="mt-4 text-sm text-gray-500">
+                Apify Run ID: {result.runId}
+              </div>
             )}
           </div>
-        </section>
-      )}
-
-      <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="font-semibold text-blue-800 mb-2">How to use:</h3>
-        <ol className="list-decimal list-inside space-y-1 text-blue-700">
-          <li>Paste a Zillow listing URL above</li>
-          <li>
-            Choose whether to use Apify (requires API token) or basic scraping
-          </li>
-          <li>Click &quot;Scrape Listing&quot; to extract property data</li>
-          <li>View the extracted information below</li>
-        </ol>
+        )}
+      </div>
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded- flex flex-col flex-wrap gap-4">
+        <h3 className="text-xl font-semibold text-blue-800 mb-0">
+          How to use:
+        </h3>
+        <div>
+          <h4 className="font-semibold text-blue-800">Zillow Scraper: </h4>
+          <ol className="list-decimal list-inside space-y-1 text-blue-700">
+            <li>Paste a Zillow listing URL above</li>
+            <li>
+              Choose whether to use Apify (requires API token) or basic scraping
+            </li>
+            <li>Click &quot;Scrape Listing&quot; to extract property data</li>
+            <li>View the extracted information below</li>
+          </ol>
+        </div>
+        <div>
+          <h4 className="font-semibold text-blue-800">Generate Content: </h4>
+          <ul className="list-disc list-inside space-y-1 text-blue-700">
+            <li>
+              Generate Listing - Transform scraped property data into a
+              compelling, AI-powered listing description that highlights unique
+              features and neighborhood appeal
+            </li>
+            <li>
+              Get Nearby Places - Discover top-rated restaurants, parks, and
+              attractions within 5km to showcase neighborhood lifestyle
+            </li>
+          </ul>
+        </div>
 
         <div className="mt-4 text-sm text-blue-600">
           <strong>Note:</strong> For production use, consider setting up an
