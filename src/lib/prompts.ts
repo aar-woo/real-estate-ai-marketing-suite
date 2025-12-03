@@ -35,6 +35,7 @@ Guidelines:
 - 2-3 short paragraphs
 - Highlight unique features and neighborhood appeal
 - Clear call-to-action to schedule a showing
+- Create an SEO optimized title
 - Avoid unverifiable claims
 - Avoid overused cliches
 - U.S. English

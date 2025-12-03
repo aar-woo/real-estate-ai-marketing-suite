@@ -40,7 +40,6 @@ export default function ZillowScraper() {
   const [result, setResult] = useState<ScrapeResponse | null>(null);
   const [generatedListing, setGeneratedListing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [useApify, setUseApify] = useState(true);
   const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -52,10 +51,7 @@ export default function ZillowScraper() {
     setResult(null);
 
     try {
-      const endpoint = useApify
-        ? "/api/scrape-zillow-apify"
-        : "/api/scrape-zillow";
-      const response = await fetch(endpoint, {
+      const response = await fetch("/api/scrape-zillow-apify", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +116,7 @@ export default function ZillowScraper() {
   return (
     <div className="w-full max-w-4xl">
       <h1 className="text-2xl font-bold mb-2 text-center">
-        Zillow Listing Scraper
+        Property Marketing Toolkit
       </h1>
       <form onSubmit={handleSubmit} className="mb-8">
         <div className="mb-4">
@@ -139,18 +135,6 @@ export default function ZillowScraper() {
             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-        </div>
-
-        <div className="mb-4">
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              checked={useApify}
-              onChange={(e) => setUseApify(e.target.checked)}
-              className="mr-2"
-            />
-            Use Apify for advanced scraping (requires API token)
-          </label>
         </div>
 
         <button
@@ -400,40 +384,41 @@ export default function ZillowScraper() {
             )}
           </div>
         )}
-      </div>
-      <div className="p-4 bg-blue-50 border border-blue-200 rounded- flex flex-col flex-wrap gap-4">
-        <h3 className="text-xl font-semibold text-blue-800 mb-0">
-          How to use:
-        </h3>
-        <div>
-          <h4 className="font-semibold text-blue-800">Zillow Scraper: </h4>
-          <ol className="list-decimal list-inside space-y-1 text-blue-700">
-            <li>Paste a Zillow listing URL above</li>
-            <li>
-              Choose whether to use Apify (requires API token) or basic scraping
-            </li>
-            <li>Click &quot;Scrape Listing&quot; to extract property data</li>
-            <li>View the extracted information below</li>
-          </ol>
-        </div>
-        <div>
-          <h4 className="font-semibold text-blue-800">Generate Content: </h4>
-          <ul className="list-disc list-inside space-y-1 text-blue-700">
-            <li>
-              Generate Listing - Transform scraped property data into a
-              compelling, AI-powered listing description that highlights unique
-              features and neighborhood appeal
-            </li>
-            <li>
-              Get Nearby Places - Discover top-rated restaurants, parks, and
-              attractions within 5km to showcase neighborhood lifestyle
-            </li>
-          </ul>
-        </div>
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded- flex flex-col flex-wrap gap-4">
+          <h3 className="text-xl font-semibold text-blue-800 mb-0">
+            How to use:
+          </h3>
+          <div>
+            <h4 className="font-semibold text-blue-800">Zillow Scraper: </h4>
+            <ol className="list-decimal list-inside space-y-1 text-blue-700">
+              <li>Paste a Zillow listing URL above</li>
+              <li>
+                Choose whether to use Apify (requires API token) or basic
+                scraping
+              </li>
+              <li>Click &quot;Scrape Listing&quot; to extract property data</li>
+              <li>View the extracted information below</li>
+            </ol>
+          </div>
+          <div>
+            <h4 className="font-semibold text-blue-800">Generate Content: </h4>
+            <ul className="list-disc list-inside space-y-1 text-blue-700">
+              <li>
+                Generate Listing - Transform scraped property data into a
+                compelling, AI-powered listing description that highlights
+                unique features and neighborhood appeal
+              </li>
+              <li>
+                Get Nearby Places - Discover top-rated restaurants, parks, and
+                attractions within 5km to showcase neighborhood lifestyle
+              </li>
+            </ul>
+          </div>
 
-        <div className="mt-4 text-sm text-blue-600">
-          <strong>Note:</strong> For production use, consider setting up an
-          Apify API token for better data extraction and reliability.
+          <div className="mt-4 text-sm text-blue-600">
+            <strong>Note:</strong> For production use, consider setting up an
+            Apify API token for better data extraction and reliability.
+          </div>
         </div>
       </div>
     </div>
