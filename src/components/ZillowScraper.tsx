@@ -400,7 +400,6 @@ export default function ZillowScraper() {
             )}
           </div>
         )}
-      </div>
       <div className="p-4 bg-blue-50 border border-blue-200 rounded- flex flex-col flex-wrap gap-4">
         <h3 className="text-xl font-semibold text-blue-800 mb-0">
           How to use:
@@ -410,7 +409,8 @@ export default function ZillowScraper() {
           <ol className="list-decimal list-inside space-y-1 text-blue-700">
             <li>Paste a Zillow listing URL above</li>
             <li>
-              Choose whether to use Apify (requires API token) or basic scraping
+                Choose whether to use Apify (requires API token) or basic
+                scraping
             </li>
             <li>Click &quot;Scrape Listing&quot; to extract property data</li>
             <li>View the extracted information below</li>
@@ -421,8 +421,8 @@ export default function ZillowScraper() {
           <ul className="list-disc list-inside space-y-1 text-blue-700">
             <li>
               Generate Listing - Transform scraped property data into a
-              compelling, AI-powered listing description that highlights unique
-              features and neighborhood appeal
+                compelling, AI-powered listing description that highlights
+                unique features and neighborhood appeal
             </li>
             <li>
               Get Nearby Places - Discover top-rated restaurants, parks, and
@@ -434,6 +434,7 @@ export default function ZillowScraper() {
         <div className="mt-4 text-sm text-blue-600">
           <strong>Note:</strong> For production use, consider setting up an
           Apify API token for better data extraction and reliability.
+          </div>
         </div>
       </div>
     </div>
