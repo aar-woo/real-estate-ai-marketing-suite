@@ -9,7 +9,7 @@ import Tabs from "@/components/Tabs";
 const tabs = [
   {
     id: "zillow-scraper",
-    label: "Zillow Listing Scraper",
+    label: "Marketing Toolkit",
     content: <ZillowScraper />,
   },
   {
