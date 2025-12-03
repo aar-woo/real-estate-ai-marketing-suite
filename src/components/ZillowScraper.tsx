@@ -401,16 +401,35 @@ export default function ZillowScraper() {
           </div>
         )}
       </div>
-      <div className="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="font-semibold text-blue-800 mb-2">How to use:</h3>
-        <ol className="list-decimal list-inside space-y-1 text-blue-700">
-          <li>Paste a Zillow listing URL above</li>
-          <li>
-            Choose whether to use Apify (requires API token) or basic scraping
-          </li>
-          <li>Click &quot;Scrape Listing&quot; to extract property data</li>
-          <li>View the extracted information below</li>
-        </ol>
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded- flex flex-col flex-wrap gap-4">
+        <h3 className="text-xl font-semibold text-blue-800 mb-0">
+          How to use:
+        </h3>
+        <div>
+          <h4 className="font-semibold text-blue-800">Zillow Scraper: </h4>
+          <ol className="list-decimal list-inside space-y-1 text-blue-700">
+            <li>Paste a Zillow listing URL above</li>
+            <li>
+              Choose whether to use Apify (requires API token) or basic scraping
+            </li>
+            <li>Click &quot;Scrape Listing&quot; to extract property data</li>
+            <li>View the extracted information below</li>
+          </ol>
+        </div>
+        <div>
+          <h4 className="font-semibold text-blue-800">Generate Content: </h4>
+          <ul className="list-disc list-inside space-y-1 text-blue-700">
+            <li>
+              Generate Listing - Transform scraped property data into a
+              compelling, AI-powered listing description that highlights unique
+              features and neighborhood appeal
+            </li>
+            <li>
+              Get Nearby Places - Discover top-rated restaurants, parks, and
+              attractions within 5km to showcase neighborhood lifestyle
+            </li>
+          </ul>
+        </div>
 
         <div className="mt-4 text-sm text-blue-600">
           <strong>Note:</strong> For production use, consider setting up an
