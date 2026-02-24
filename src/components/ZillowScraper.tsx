@@ -220,7 +220,7 @@ export default function ZillowScraper() {
           </div>
         )}
 
-        {generatedListing && (
+        {result && (
           <div className="w-full border border-gray-200 rounded-lg p-6 bg-white">
             <h3 className="text-lg font-semibold mb-4">Generate Social Media Content</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
@@ -273,7 +273,7 @@ export default function ZillowScraper() {
               disabled={isGeneratingSocial}
               className="cursor-pointer bg-green-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isGeneratingSocial ? "Generating..." : "Generate Social Content"}
+              {isGeneratingSocial ? "Generating..." : "Generate Social Media Content"}
             </button>
 
             {isGeneratingSocial && (
