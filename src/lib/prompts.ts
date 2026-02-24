@@ -1,5 +1,22 @@
 import { ExtendedPlace } from "./placesTypes";
 
+export type BrandingData = {
+  agentName?: string;
+  brokerage?: string;
+  phone?: string;
+};
+
+export type SocialMediaPost = {
+  caption: string;
+  hashtags: string;
+  cta: string;
+};
+
+export type SocialMediaResult = {
+  instagram: [SocialMediaPost, SocialMediaPost];
+  tiktok: [SocialMediaPost, SocialMediaPost];
+};
+
 export type PropertyData = {
   address?: string;
   price?: string;
@@ -99,4 +116,46 @@ Guidelines:
 - U.S. English
 - Use clear headings, concise paragraphs, and practical tips. End with a brief action-oriented summary.
 - Organize in intro + bullet list format.`;
+}
+
+export function socialMediaPrompt(
+  propertyData: PropertyData,
+  branding: BrandingData
+): string {
+  const {
+    address = "",
+    price = "",
+    bedrooms = 0,
+    bathrooms = 0,
+    sqft = 0,
+    features = [],
+  } = propertyData || {};
+
+  const { agentName = "", brokerage = "", phone = "" } = branding || {};
+
+  const topFeatures = features.slice(0, 5).join(", ");
+
+  return `You are a real estate social media expert. Generate content for this listing.
+
+Property: ${address}, ${price}, ${bedrooms}bd/${bathrooms}ba, ${sqft}sqft
+Features: ${topFeatures}
+Agent: ${agentName} | ${brokerage} | ${phone}
+
+Return ONLY valid JSON with no markdown or extra text:
+{
+  "instagram": [
+    { "caption": "200-280 chars, include the property address, visual/lifestyle focus, highlight 2-3 standout features with descriptive language", "hashtags": "8-10 hashtags as a single string", "cta": "short action phrase" },
+    { "caption": "...", "hashtags": "...", "cta": "..." }
+  ],
+  "tiktok": [
+    { "caption": "150-220 chars, include the property address, hook-first, trendy and conversational, briefly describe what makes the home special", "hashtags": "5-7 hashtags as a single string", "cta": "short action phrase" },
+    { "caption": "...", "hashtags": "...", "cta": "..." }
+  ]
+}
+
+Rules:
+- Always include the full property address in every caption
+- Weave agent name and brokerage naturally into captions or CTA
+- No unverifiable claims
+- U.S. English`;
 }

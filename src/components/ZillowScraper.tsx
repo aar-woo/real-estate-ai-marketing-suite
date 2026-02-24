@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { PropertyData } from "@/lib/prompts";
+import { PropertyData, BrandingData, SocialMediaResult } from "@/lib/prompts";
 import { getPriceLevelText, getRatingStars } from "@/lib/placesInfoUtils";
 import { PlacesApiResponse, ExtendedPlace } from "@/lib/placesTypes";
 import { Skeleton } from "./ui/skeleton";
+import SocialMediaContent from "./SocialMediaContent";
 
 interface ZillowData {
   address: string;
@@ -37,10 +38,17 @@ export default function ZillowScraper() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGeneratingListing, setIsGeneratingListing] = useState(false);
   const [isGettingPlaces, setIsGettingPlaces] = useState(false);
+  const [isGeneratingSocial, setIsGeneratingSocial] = useState(false);
   const [result, setResult] = useState<ScrapeResponse | null>(null);
   const [generatedListing, setGeneratedListing] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [placesData, setPlacesData] = useState<PlacesApiResponse | null>(null);
+  const [branding, setBranding] = useState<BrandingData>({
+    agentName: "",
+    brokerage: "",
+    phone: "",
+  });
+  const [socialContent, setSocialContent] = useState<SocialMediaResult | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +100,30 @@ export default function ZillowScraper() {
     const createListingData = await createListingRes.json();
     setGeneratedListing(createListingData.result);
     setIsGeneratingListing(false);
+  };
+
+  const handleGenerateSocial = async () => {
+    if (!result) return;
+    setIsGeneratingSocial(true);
+    setSocialContent(null);
+
+    const propertyData = {
+      address: result.data.address,
+      price: result.data.price,
+      bedrooms: result.data.beds ? Number(result.data.beds) : 0,
+      bathrooms: result.data.baths ? Number(result.data.baths) : 0,
+      sqft: result.data.sqft ? Number(result.data.sqft) : 0,
+      features: result.data.features,
+    };
+
+    const res = await fetch("/api/generate-social-content", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ propertyData, branding }),
+    });
+    const data = await res.json();
+    setSocialContent(data.result);
+    setIsGeneratingSocial(false);
   };
 
   const handleGetPlaces = async () => {
@@ -185,6 +217,76 @@ export default function ZillowScraper() {
           <div className="bg-blue-200 text-black border border-blue-200 rounded-lg p-6">
             <h3 className="font-semibold mb-3">Generated Listing</h3>
             <p>{generatedListing}</p>
+          </div>
+        )}
+
+        {result && (
+          <div className="w-full border border-gray-200 rounded-lg p-6 bg-white">
+            <h3 className="text-lg font-semibold mb-4">Generate Social Media Content</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Agent Name
+                </label>
+                <input
+                  type="text"
+                  value={branding.agentName}
+                  onChange={(e) =>
+                    setBranding((b) => ({ ...b, agentName: e.target.value }))
+                  }
+                  placeholder="Jane Smith"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Brokerage
+                </label>
+                <input
+                  type="text"
+                  value={branding.brokerage}
+                  onChange={(e) =>
+                    setBranding((b) => ({ ...b, brokerage: e.target.value }))
+                  }
+                  placeholder="Realty Co."
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="text"
+                  value={branding.phone}
+                  onChange={(e) =>
+                    setBranding((b) => ({ ...b, phone: e.target.value }))
+                  }
+                  placeholder="(555) 000-0000"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleGenerateSocial}
+              disabled={isGeneratingSocial}
+              className="cursor-pointer bg-green-600 text-white px-6 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isGeneratingSocial ? "Generating..." : "Generate Social Media Content"}
+            </button>
+
+            {isGeneratingSocial && (
+              <div className="mt-4">
+                <Skeleton className="h-40 w-full bg-stone-300" />
+              </div>
+            )}
+
+            {socialContent && (
+              <div className="mt-6">
+                <SocialMediaContent result={socialContent} />
+              </div>
+            )}
           </div>
         )}
 
