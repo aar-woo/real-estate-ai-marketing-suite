@@ -144,16 +144,17 @@ Agent: ${agentName} | ${brokerage} | ${phone}
 Return ONLY valid JSON with no markdown or extra text:
 {
   "instagram": [
-    { "caption": "150-200 chars, visual/lifestyle focus", "hashtags": "8-10 hashtags as a single string", "cta": "short action phrase" },
+    { "caption": "200-280 chars, include the property address, visual/lifestyle focus, highlight 2-3 standout features with descriptive language", "hashtags": "8-10 hashtags as a single string", "cta": "short action phrase" },
     { "caption": "...", "hashtags": "...", "cta": "..." }
   ],
   "tiktok": [
-    { "caption": "100-150 chars, hook-first, trendy and conversational", "hashtags": "5-7 hashtags as a single string", "cta": "short action phrase" },
+    { "caption": "150-220 chars, include the property address, hook-first, trendy and conversational, briefly describe what makes the home special", "hashtags": "5-7 hashtags as a single string", "cta": "short action phrase" },
     { "caption": "...", "hashtags": "...", "cta": "..." }
   ]
 }
 
 Rules:
+- Always include the full property address in every caption
 - Weave agent name and brokerage naturally into captions or CTA
 - No unverifiable claims
 - U.S. English`;
